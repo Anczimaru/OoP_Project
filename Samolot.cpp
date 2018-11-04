@@ -15,6 +15,7 @@ private:
     int m_index; //index of airplane
     /*
     1 - flying, 2 - waiting, 3 - landing, 4 - unloading, 5 - maintenance, 6 - repairs, 7 - refueling, 8 - loading, 9 - departing, 10 - hangar
+    yoloyloyloylyoyylyoyl
     */
     int m_airline; //index of airline
     int m_airstrip; // index of airstrip
