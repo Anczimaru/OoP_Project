@@ -2,7 +2,6 @@
 #include <vector>
 
 
-using namespace std;
 
 class Samolot
     {
@@ -62,7 +61,10 @@ class Samolot
             {return m_tech_state;}
         void set_tech_state(double target_state)
             {m_tech_state = target_state;}
-    
+        status_t get_status()
+            {return m_status;}
+        void set_status(status_t tmp_status)
+            {m_status = tmp_status;}    
     };
 
 class Airport
@@ -72,7 +74,6 @@ class Airport
         int m_waiting_ppl;
 
         vector <Samolot> samoloty;
-        Samolot m_tmp_plane; // to do change to pointer
 
     public:
         Airport(int index = 1) : m_index_ap(index)
@@ -91,12 +92,50 @@ class Airport
         
         void do_routine_on_plane()
             {
-                m_tmp_plane = samoloty.back();
-                unload();
-                repair();
-                refuel();
-                load();
-                cout<<"\n" <<endl;
+                //HEART OF ACTION IF DOES APRIOPRIATE ACTIONS DEPENDING ON STATUS OF PLANE
+                m_tmp_plane = samoloty.back(); //Loading latest plane
+                //iterate over converted int status
+                for(int i = m_tmp_plane.get_status();i<=9;i++)
+                {
+                //taking apriopriate actions
+                switch(m_tmp_plane.get_status())
+                    {
+                    case status_t::flying:
+                        m_tmp_plane.set_status(waiting);
+                        cout<<"plane is flying"<<endl;
+                        break;  
+                    case status_t::waiting:
+                        m_tmp_plane.set_status(landing);
+                        cout<<"plane is waiting for landing"<<endl;
+                        break; 
+                    case status_t::landing:
+                        m_tmp_plane.set_status(unloading);
+                        cout<<"plane landed"<<endl;
+                        break;   
+                    case status_t::unloading:
+                        m_tmp_plane.set_status(repairing);
+                        cout<<"plane was unloaded"<<endl;
+                        break; 
+                    case status_t::repairing:
+                        m_tmp_plane.set_status(refueling);
+                        cout<<"plane repaired"<<endl;
+                        break; 
+                    case status_t::refueling:
+                        m_tmp_plane.set_status(loading);
+                        cout<<"plane refeueled"<<endl;
+                        break; 
+                    case status_t::loading:
+                        m_tmp_plane.set_status(departing);
+                        cout<<"plane loaded"<<endl;
+                        break; 
+                    case status_t::departing:
+                        m_tmp_plane.set_status(flying);
+                        cout<<"plane is leaving"<<endl;
+                        break; 
+                    }
+                m_tmp_plane.set_status(i);
+                }
+
             }
         
         double load() //not sure bout type
@@ -109,6 +148,7 @@ class Airport
             }
         double unload() //not sure bout type
             {
+                //unload ppl from plane
                 int tmp_ppl_unloaded = m_tmp_plane.get_passengers();
                 m_tmp_plane.set_passengers(0);
                 cout<<"Unloaded: "<<tmp_ppl_unloaded<<" passengers"<<endl;
@@ -142,6 +182,11 @@ class Airport
         bool taking_off(int airstrip)
             {
                 //wystatuj samolot z lotniska
+            }
+        void check_out()
+            {
+
+
             }
 
 
