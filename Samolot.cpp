@@ -30,7 +30,7 @@ enum status_t
         refueling =6,
         loading =7,
         departing =8,
-        hangar =9
+        flying_away =9
     };
 
 int gibMe() // funckja do losowania indeksu lotniska. Generalnie program mamy mało idioto-odporny. Musimy pamiętać, żeby najpierw inicjalizować wszystkie lotniska
@@ -143,34 +143,27 @@ class Airport
 
     public:
     //CONSTR AND DECONSTR
-        Airport(int index = 1) : m_index_ap(new_airport)
+        Airport(int index = 1) : m_index_ap(new_airport), m_waiting_ppl(200)
             {
                 lotniska.push_back(*this);
                 cout << "Airport created with index no: " << m_index_ap << endl;
                 new_airport++;
             }
-            // DO POPRAWY TODAY /////////////////////////////////////////////////////////////////////////////////////
 
-        Airport(const Airport &lotnisko):m_index_ap(lotnisko.m_index_ap)
+        Airport(const Airport &lotnisko):m_index_ap(lotnisko.m_index_ap), m_waiting_ppl(lotnisko.m_waiting_ppl)
             {
-
-                /////////////////////////// JAK KOPIOWAĆ !!!!!!!!!!!!!!!!!!!
-                cout<<"copying glorius airport"<<endl;
+                // cout<<"copying glorius airport"<<endl;
             }
         ~Airport()
             {
-                cout<<"Airport with index: "<<m_index_ap <<" was destroyed" <<endl;
+                // cout<<"Airport with index: "<<m_index_ap <<" was destroyed" <<endl;
             }
     //FUNCTIONS
         void register_plane(Samolot &plane)
             {
                 samoloty.push_back(plane);
-                samoloty.back().set_src(m_index_ap);
-                do
-                {
-                    samoloty.back().set_dest(gibMe());
-
-                } while (samoloty.back().get_dest() == m_index_ap);
+                samoloty.back().set_dest(m_index_ap);
+                
                 
                 cout << "Airport: " << m_index_ap << " registered plane with index: " << samoloty.back().get_plane_index() << endl;
                 samoloty.back().fly_to_airport();
@@ -191,36 +184,41 @@ class Airport
                     {
                     case status_t::flying:
                         m_tmp_plane.set_status(waiting);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" is flying"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" is flying"<<endl;
                         break;  
                     case status_t::waiting:
                         m_tmp_plane.set_status(landing);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" is waiting for landing"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" is waiting for landing"<<endl;
                         break; 
                     case status_t::landing:
+                        land(m_tmp_plane);
                         m_tmp_plane.set_status(unloading);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" landed"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" landed"<<endl;
                         break;   
                     case status_t::unloading:
+                        unload(m_tmp_plane);
                         m_tmp_plane.set_status(repairing);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" was unloaded"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" was unloaded"<<endl;
                         break; 
                     case status_t::repairing:
+                        repair(m_tmp_plane);
                         m_tmp_plane.set_status(refueling);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" repaired"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" repaired"<<endl;
                         break; 
                     case status_t::refueling:
+                        refuel(m_tmp_plane);
                         m_tmp_plane.set_status(loading);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" refeueled"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" refeueled"<<endl;
                         break; 
                     case status_t::loading:
+                        load(m_tmp_plane);
                         m_tmp_plane.set_status(departing);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" loaded"<<endl;
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" loaded"<<endl;
                         break; 
                     case status_t::departing:
-                        m_tmp_plane.set_status(flying);
-                        cout<<"plane no: "<<m_tmp_plane.get_plane_index()<<" is leaving"<<endl;
-                        break; 
+                        m_tmp_plane.set_status(flying_away);
+                        cout<<"     plane no: "<<m_tmp_plane.get_plane_index()<<" is leaving"<<endl;
+                        break;
                     }
             }
         void do_routine()
@@ -230,7 +228,7 @@ class Airport
                     for (int i =0;i<samoloty.size();i++)
                     {
                         do_routine_on_plane(samoloty[i]);
-                        if(samoloty[i].get_status()==departing)
+                        if(samoloty[i].get_status()==flying_away)
                             {
                                 samoloty.erase(samoloty.begin()+i);    
                             }
@@ -246,42 +244,51 @@ class Airport
             {   
                 //load people to plane
                 int cap {m_tmp_plane.get_capacity()};
+                cout << cap<<endl;
                 int ppl_to_load;
                 (cap >= m_waiting_ppl)? (ppl_to_load = cap) : (ppl_to_load = m_waiting_ppl);
+                cout <<ppl_to_load <<endl; 
                 m_tmp_plane.set_passengers(ppl_to_load);
-                cout<<"Loaded : "<<m_tmp_plane.get_passengers()<<" passengers"<<endl;
+                cout<<"         Loaded : "<<m_tmp_plane.get_passengers()<<" passengers"<<endl;
             }
         void unload(Samolot &m_tmp_plane)
             {
                 //unload ppl from plane
                 int tmp_ppl_unloaded = m_tmp_plane.get_passengers();
                 m_tmp_plane.set_passengers(0);
-                cout<<"Unloaded: "<<tmp_ppl_unloaded<<" passengers"<<endl;
+                cout<<"         Unloaded: "<<tmp_ppl_unloaded<<" passengers"<<endl;
             }
         void refuel(Samolot &m_tmp_plane)
             {
                 m_tmp_plane.set_fuel(1.00);
-                cout<<"Refueled plane with index: "<<m_tmp_plane.get_plane_index()<<endl;
+                cout<<"         Refueled plane with index: "<<m_tmp_plane.get_plane_index()<<endl;
             }
         void repair(Samolot &m_tmp_plane)  //if plane maintenance below 80% repair it
             {
                 if (m_tmp_plane.get_tech_state() < 0.8)
                     {
                         m_tmp_plane.set_tech_state(1.00);
-                        cout<<"Repaired plane with index: "<<m_tmp_plane.get_plane_index()<<endl;
+                        cout<<"         Repaired plane with index: "<<m_tmp_plane.get_plane_index()<<endl;
                     }
                 else
                     {
-                        cout<<"No maintenance needed for plane: "<<m_tmp_plane.get_plane_index()<<endl;
+                        cout<<"         No maintenance needed for plane: "<<m_tmp_plane.get_plane_index()<<endl;
                     }
             }
         int wait_in_hangar(int how_long, int how_long_left)
             {
                 //sleep for x ticks, x1 - trackers of sleept time
             }
-        void land(int airstrip=1)
+        void land(Samolot &m_tmp_plane)
             {
-                samoloty.back().set_src(m_index_ap);
+                do
+                {
+                    samoloty.back().set_dest(gibMe());
+
+                } while (samoloty.back().get_dest() == m_index_ap);
+
+                m_tmp_plane.set_src(m_index_ap);
+                m_tmp_plane.fly_to_airport();
                 //wyladuje samolot
 
             }
@@ -304,14 +311,14 @@ int main(int argc, char* argv[])
 {
     srand(time(NULL));
 	Airport Los_Angles,Katowice, London;
-	Samolot p1,p2;   
+	Samolot p1;   
 	Los_Angles.register_plane(p1);
-    Los_Angles.register_plane(p2);
 	
     // Los_Angles.register_plane(r2);
     // Los_Angles.register_plane(r3);
 
     Los_Angles.do_routine();
+
    /* Samolot r2(2);
     Los_Angles.register_plane(r2);
     Los_Angles.do_routine_on_plane();
