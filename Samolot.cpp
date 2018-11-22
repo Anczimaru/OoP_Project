@@ -3,9 +3,17 @@
 #include <ctime>
 using namespace std;
 
+// CLASSES DECLARATION
+class Samolot;
+class Airport;
+
 // GLOBAL VARS
 int new_plane_index = 1; // those are initial indeces when creating objects, incrementation after creation :) 
 int new_airport = 1;
+
+//GLOBAL VECTORS DECLARATION
+vector <Samolot> samoloty;
+vector <Airport> lotniska;
 
 
 //ENUM FOR PLANE STATUS
@@ -124,10 +132,6 @@ class Samolot
             }
     };
 
-// VECTORY /////////////////////////////////////////////////////////////////////////////////
-    vector <Samolot> samoloty;
-    vector <Airport> lotniska;
-
 
 class Airport
     {
@@ -141,8 +145,17 @@ class Airport
     //CONSTR AND DECONSTR
         Airport(int index = 1) : m_index_ap(new_airport)
             {
+                lotniska.push_back(*this);
                 cout << "Airport created with index no: " << m_index_ap << endl;
                 new_airport++;
+            }
+            // DO POPRAWY TODAY /////////////////////////////////////////////////////////////////////////////////////
+
+        Airport(const Airport &lotnisko):m_index_ap(lotnisko.m_index_ap)
+            {
+
+                /////////////////////////// JAK KOPIOWAĆ !!!!!!!!!!!!!!!!!!!
+                cout<<"copying glorius airport"<<endl;
             }
         ~Airport()
             {
