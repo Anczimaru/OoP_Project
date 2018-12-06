@@ -23,8 +23,16 @@ int RandomizeAirportIndex()
 
 //CONSTR AND DECONSTR
 Airport::Airport() :
-	m_index_ap(lotniska.size()+1), m_waiting_ppl(200)
+	m_index_ap(lotniska.size()+1), m_waiting_ppl(200),m_no_lines(2)
 {
+	lotniska.push_back(this);
+	cout << "Airport created with index no: " << m_index_ap << endl;
+}
+Airport::Airport(int lines) :
+	m_index_ap(lotniska.size() + 1), m_waiting_ppl(200)
+
+{
+	m_no_lines = lines;
 	lotniska.push_back(this);
 	cout << "Airport created with index no: " << m_index_ap << endl;
 }
@@ -191,6 +199,15 @@ void Airport::take_off(Samolot* m_tmp_plane)
 
 
 
+}
+
+int Airport::get_airport_index()
+{
+	return m_index_ap;
+}
+int Airport::get_airport_size()
+{
+	return m_no_lines;
 }
 
 // int wait_in_hangar(int how_long, int how_long_left)

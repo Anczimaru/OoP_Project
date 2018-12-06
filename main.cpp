@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Samolot.h"
 #include "Airport.h"
+#include "Tower.h"
 #include <vector>
 #include <ctime>
 
@@ -50,10 +51,18 @@ void runner(int n_hours_to_simulate = 1)
 int main()
 {
 	srand(time(NULL));
-	Airport Los_Angles, Katowice, London;
-	Samolot p1, p2;
-	initialize();
-	runner();
+	Airport Chujkowo(5);
+	Airport Dupowo(7);
+	Tower t(&Dupowo);
+	Samolot p1, p2, p3;
+	t.reserve_line(&Dupowo, &p1);
+	t.reserve_line(&Dupowo, &p2);
+	t.reserve_line(&Dupowo, &p3);
+	t.show_occupancy();
+	//Airport Los_Angles, Katowice, London;
+	//Samolot p1, p2;
+	/*initialize();
+	runner();*/
 	
 	return 0;
 }
