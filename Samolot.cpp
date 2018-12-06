@@ -1,16 +1,20 @@
 #include "pch.h"
 #include "Samolot.h"
 #include <iostream>
+#include <vector>
+
 using namespace std;
 
 //Global variables for indexing
 int new_plane_index = 1; 
 
+vector <Samolot*> samoloty;
 
 
 //Constructor
 Samolot::Samolot() :m_dest(1), m_src(2), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(0.78), m_tech_state(0.99), m_index(new_plane_index)
 {
+	samoloty.push_back(this);
 	cout <<	"Im plane with no:"<<m_index<<endl;
 	new_plane_index++;
 }
@@ -26,7 +30,7 @@ Samolot::Samolot(const Samolot &tmp_plane) :
 
 Samolot::~Samolot()
 {
-	cout << "Usuwam kurwa samolot\n";
+	//cout << "Usuwam kurwa samolot\n";
 }
 
 
@@ -106,21 +110,21 @@ void Samolot::set_status(status_t tmp_status)
 {
 	m_status = tmp_status;
 }
-void Samolot::set_status(int i)
+/*void Samolot::set_status(int i)
 {
 	m_status = (status_t)i;
-}
+}*/
 
 
 
-void Samolot::increment_status()
+/*void Samolot::increment_status()
 {
 	int x = (int)m_status;
 	x++;
 	m_status = (status_t)x;
 	cout << "changed status to: " << x << endl;
 	if (x >= 10) x = 1;
-}
+}*/
 //TEST FUNCTION
 void Samolot::whereAmI()
 {

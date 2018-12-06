@@ -5,8 +5,6 @@
 #include <vector>
 #include <ctime>
 
-vector <Samolot*> samoloty;
-vector <Airport*> lotniska;
 
 using namespace std;
 
@@ -37,7 +35,8 @@ int main()
 	srand(time(NULL));
 	Airport Los_Angles, Katowice, London;
 	Samolot p1, p2;
-	runner();
 	cout << "\n \n" << "Size of samoloty: " << samoloty.size() << endl;
+	runner();
+	
 	return 0;
 }

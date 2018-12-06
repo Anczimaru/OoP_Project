@@ -1,4 +1,5 @@
-
+#include <iostream>
+#include <vector>
 typedef enum {
 	/*
 	1 - flying, 2 - waiting, 3 - landing, 4 - unloading, 5 - repairs, 6 - refueling, 7 - loading, 8 - departing, 9 - hangar
@@ -13,6 +14,10 @@ typedef enum {
 	departing = 8,
 	flying_away = 9
 }status_t;
+
+using namespace std;
+class Samolot;
+extern vector <Samolot*> samoloty;
 
 
 #pragma once
@@ -52,7 +57,7 @@ public:
 	void set_tech_state(double target_state);
 	status_t get_status();
 	void set_status(status_t tmp_status);
-	void set_status(int i);
-	void increment_status();
-
+	/*void set_status(int i);
+	void increment_status();*/
+	
 };

@@ -6,8 +6,10 @@
 #include <memory>
 
 using namespace std;
+class Airport;
 
 
+extern vector <Airport*> lotniska;
 
 
 class Airport
@@ -30,7 +32,6 @@ public:
 	void refuel(Samolot * m_tmp_plane);
 	void repair(Samolot * m_tmp_plane);
 	void take_off(Samolot * m_tmp_plane);
-	vector <Samolot*> samoloty;
-	vector <Airport*> lotniska;
+	
 
 };

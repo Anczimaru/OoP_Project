@@ -19,6 +19,8 @@ int RandomizeAirportIndex()
 
 }
 
+
+vector <Airport*> lotniska;
 //CONSTR AND DECONSTR
 Airport::Airport() : m_index_ap(new_airport), m_waiting_ppl(200)
 {
