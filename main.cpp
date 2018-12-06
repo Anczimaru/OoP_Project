@@ -21,13 +21,19 @@ void initialize()
 }
 
 
-void runner(int n_hours_to_simulate = 5)
+void runner(int n_hours_to_simulate = 1)
 {
 	do
 	{
 		for (int i=0; i<EventSchedule.size(); i++)
 			{
-				
+				if (EventSchedule[i] = current_time)
+					{
+						int has_to_do = samoloty[i] -> get_dest();
+						cout<< current_time <<" ### AIRPORT no: "<<has_to_do<<" ### "<<endl;
+						lotniska[has_to_do-1]->do_routine();
+
+					}
 
 
 			}
@@ -36,15 +42,8 @@ void runner(int n_hours_to_simulate = 5)
 
 		
 		current_time+=5*60;
-	} while (current_time <= init_time + 60*60*n_hours_to_simulate);
-	
-		for (int i = 0; i < lotniska.size(); i++)
-		{
-			cout<<"### AIRPORT no: "<<i+1<<" ### "<<endl; //remeber about shifting number by +1(vector indexing)
-			lotniska[i]->do_routine();
-		}
-		current_time +=(30*60);
-	}
+	// } while (current_time <= init_time + 60*60*n_hours_to_simulate);
+	}while(current_time <= 960422520);
 	cout<< "######################## Finished simulation, cleaning up ########################\n\n"<<endl;
 }
 
