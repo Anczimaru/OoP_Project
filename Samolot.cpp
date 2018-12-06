@@ -6,17 +6,17 @@
 using namespace std;
 
 //Global variables for indexing
-int new_plane_index = 1; 
-
+time_t init_time = 960420420;
+time_t current_time = init_time;
 vector <Samolot*> samoloty;
-
+vector <time_t> EventSchedule;
 
 //Constructor
-Samolot::Samolot() :m_dest(1), m_src(2), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(0.78), m_tech_state(0.99), m_index(new_plane_index)
+Samolot::Samolot() :m_dest(1), m_src(2), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(0.78), m_tech_state(0.99), m_index(samoloty.size()+1)
 {
 	samoloty.push_back(this);
+	EventSchedule.push_back(init_time);
 	cout <<	"Im plane with no:"<<m_index<<endl;
-	new_plane_index++;
 }
 
 //Copying constructor
@@ -39,6 +39,7 @@ void Samolot:: fly_to_airport()
 {
 	cout << "Hi, Im plane number: " << m_index << "\tIm flying to: " << m_dest << "\tfrom: " << m_src << endl;
 }
+
 //SETTERS AND GETTERS section
 
 //DESTINATION
@@ -110,25 +111,17 @@ void Samolot::set_status(status_t tmp_status)
 {
 	m_status = tmp_status;
 }
-/*void Samolot::set_status(int i)
-{
-	m_status = (status_t)i;
-}*/
 
-
-
-/*void Samolot::increment_status()
-{
-	int x = (int)m_status;
-	x++;
-	m_status = (status_t)x;
-	cout << "changed status to: " << x << endl;
-	if (x >= 10) x = 1;
-}*/
 //TEST FUNCTION
 void Samolot::whereAmI()
 {
 	//Do test�w
 	cout << "Im located at: " << m_src << endl;
+}
+void Samolot::whatAmIDoing()
+{
+	cout<<"I'm "<<get_status()<<" ,my dest "<<get_dest()<<" ,from "<<get_src()<<endl;
+
+
 }
 

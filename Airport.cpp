@@ -7,26 +7,26 @@
 
 using namespace std;
 
-int new_airport = 1;
+vector <Airport*> lotniska;
 
 int RandomizeAirportIndex()  
 {
 	int give;
 	do {
-		give = rand() % new_airport;
+		give = rand() % (lotniska.size()+1);
 	} while (give == 0);
 	return give;
 
 }
 
 
-vector <Airport*> lotniska;
+
 //CONSTR AND DECONSTR
-Airport::Airport() : m_index_ap(new_airport), m_waiting_ppl(200)
+Airport::Airport() :
+	m_index_ap(lotniska.size()+1), m_waiting_ppl(200)
 {
 	lotniska.push_back(this);
 	cout << "Airport created with index no: " << m_index_ap << endl;
-	new_airport++;
 }
 //COPYING CONSTRUTOR
 Airport::Airport(const Airport &lotnisko) :
@@ -60,54 +60,66 @@ void Airport::do_routine_on_plane(Samolot* m_tmp_plane)
 	case status_t::flying:
 		m_tmp_plane->set_status(waiting);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is flying" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::waiting:
 		m_tmp_plane->set_status(landing);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is waiting for landing" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::landing:
 		land(m_tmp_plane);
 		m_tmp_plane->set_status(unloading);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " landed" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::unloading:
 		unload(m_tmp_plane);
 		m_tmp_plane->set_status(repairing);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " was unloaded" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::repairing:
 		repair(m_tmp_plane);
 		m_tmp_plane->set_status(refueling);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " repaired" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::refueling:
 		refuel(m_tmp_plane);
 		m_tmp_plane->set_status(loading);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " refeueled" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::loading:
 		load(m_tmp_plane);
 		m_tmp_plane->set_status(departing);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " loaded" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::departing:
 		m_tmp_plane->set_status(flying_away);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is leaving" << endl;
+		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	}
 }
 void Airport::do_routine()
 {
+	//FUNCTION ITERATES OVER VECTOR OF PRZYPISANE_SAMOLOTY, and does routine on everysingle one of them
 	if (przypisane_samoloty.size() > 0)
 	{
 		for (int i = 0; i < przypisane_samoloty.size(); i++)
 		{
-			do_routine_on_plane(przypisane_samoloty[i].get());
-			if (przypisane_samoloty[i]->get_status() == flying_away)
-			{
-				take_off(przypisane_samoloty[i].get());
-				przypisane_samoloty.erase(przypisane_samoloty.begin() + i);
-			}
+			if (EventSchedule[przypisane_samoloty[i]->get_plane_index()-1] == current_time)
+				{
+					do_routine_on_plane(przypisane_samoloty[i].get());
+					if (przypisane_samoloty[i]->get_status() == flying_away)
+						{
+							take_off(przypisane_samoloty[i].get());
+							przypisane_samoloty.erase(przypisane_samoloty.begin() + i);
+						}
+				}
 		}
 	}
 	/////////////               UNCOMENT LATER ON !!!!!!!!!!!!!!! //////////////

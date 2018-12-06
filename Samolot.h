@@ -18,7 +18,9 @@ typedef enum {
 using namespace std;
 class Samolot;
 extern vector <Samolot*> samoloty;
-
+extern time_t init_time;
+extern time_t current_time;
+extern vector <time_t> EventSchedule;
 
 #pragma once
 class Samolot
@@ -47,6 +49,7 @@ public:
 	void set_src(int src);
 	int get_src();
 	void whereAmI();
+	void whatAmIDoing();
 	int get_plane_index();
 	int get_capacity();
 	int get_passengers();
@@ -57,6 +60,7 @@ public:
 	void set_tech_state(double target_state);
 	status_t get_status();
 	void set_status(status_t tmp_status);
+	
 	/*void set_status(int i);
 	void increment_status();*/
 	

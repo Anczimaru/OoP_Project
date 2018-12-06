@@ -4,13 +4,14 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <ctime>
 
 using namespace std;
 class Airport;
 
 
 extern vector <Airport*> lotniska;
-
+extern vector <time_t> EventSchedule;
 
 class Airport
 {
