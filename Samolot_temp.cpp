@@ -1,3 +1,4 @@
+#include "pch.h"
 #include <iostream>
 #include <vector>
 #include <ctime>
@@ -34,6 +35,15 @@ enum status_t
 	flying_away = 9
 };
 
+int RandomizeAirportIndex()  
+{
+	int give;
+	do {
+		give = rand() % new_airport;
+	} while (give == 0);
+	return give;
+
+}
 
 class Samolot
 {
@@ -340,6 +350,8 @@ public:
 
 
 };
+
+
 
 void runner(int number_of_iterations = 10)
 {

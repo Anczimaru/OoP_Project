@@ -1,7 +1,9 @@
 #pragma once
+#include "pch.h"
 #include "Samolot.h"
 #include <vector>
 #include <iostream>
+#include <memory>
 
 using namespace std;
 

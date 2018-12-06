@@ -97,7 +97,7 @@ void Samolot::set_tech_state(double target_state)
 
 //STATUS OF PLANE
 
-////////////////////////////////   Czy potrzebujemy dwóch funckji set_status() ???/////////////////////////////
+////////////////////////////////   Czy potrzebujemy dwï¿½ch funckji set_status() ???/////////////////////////////
 status_t Samolot::get_status()
 {
 	return m_status;
@@ -124,7 +124,7 @@ void Samolot::increment_status()
 //TEST FUNCTION
 void Samolot::whereAmI()
 {
-	//Do testów
+	//Do testï¿½w
 	cout << "Im located at: " << m_src << endl;
 }
 
