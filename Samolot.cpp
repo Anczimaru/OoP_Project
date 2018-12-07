@@ -8,25 +8,23 @@ using namespace std;
 //Global variables for indexing
 time_t init_time = 960420420;
 time_t current_time = init_time;
-vector <Samolot*> samoloty;
+vector <shared_ptr<Samolot>> samoloty;
 vector <time_t> EventSchedule;
 
 //Constructor
-Samolot::Samolot() :m_dest(1), m_src(2), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(0.78), m_tech_state(0.99), m_index(samoloty.size()+1)
+Samolot::Samolot() :m_dest(1), m_src(2), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(0.78), m_tech_state(0.99), m_index(samoloty.size()+1),m_ap_index(1)
 {
-	samoloty.push_back(this);
+	samoloty.push_back(make_shared<Samolot>(this));
 	EventSchedule.push_back(init_time);
 	cout <<	"Im plane with no:"<<m_index<<endl;
 }
-
-//Copying constructor
-Samolot::Samolot(const Samolot &tmp_plane) :
-	m_dest(tmp_plane.m_dest), m_src(tmp_plane.m_src), m_capacity(tmp_plane.m_capacity), m_passengers(tmp_plane.m_passengers),
-	m_status(tmp_plane.m_status), m_fuel(tmp_plane.m_fuel), m_tech_state(tmp_plane.m_tech_state), m_index(tmp_plane.m_index)
+//COPYING CONSTRUTOR
+Samolot::Samolot(Samolot* tmp_plane) :
+		m_dest(tmp_plane->get_dest()), m_src(tmp_plane->get_src()), m_capacity(tmp_plane->get_capacity()), m_passengers(tmp_plane->get_passengers()),
+		m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()), m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()),m_ap_index(tmp_plane->get_ap_index())
 {
-	cout << "   Copying glorious plane with index: " << m_index << endl;
+		cout << "   Copying glorious plane with index: " << m_index << endl;
 }
-
 
 Samolot::~Samolot()
 {
@@ -66,6 +64,14 @@ int Samolot::get_src()
 int Samolot::get_plane_index()
 {
 	return m_index;
+}
+int Samolot::get_ap_index()
+{
+	return m_ap_index;
+}
+void Samolot::set_ap_index(int index)
+{
+	m_ap_index = index;
 }
 
 //PASSENGERS

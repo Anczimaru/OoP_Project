@@ -1,5 +1,9 @@
+#ifndef SAMOLOT_H
+#define SAMOLOT_H
 #include <iostream>
 #include <vector>
+#include <memory>
+
 typedef enum {
 	/*
 	1 - flying, 2 - waiting, 3 - landing, 4 - unloading, 5 - repairs, 6 - refueling, 7 - loading, 8 - departing, 9 - hangar
@@ -17,12 +21,12 @@ typedef enum {
 
 using namespace std;
 class Samolot;
-extern vector <Samolot*> samoloty;
+extern vector <shared_ptr<Samolot>> samoloty;
 extern time_t init_time;
 extern time_t current_time;
 extern vector <time_t> EventSchedule;
 
-#pragma once
+
 class Samolot
 {
 private:
@@ -34,6 +38,7 @@ private:
 	/*
 	1 - flying, 2 - waiting, 3 - landing, 4 - unloading, 5 - maintenance, 6 - repairs, 7 - refueling, 8 - loading, 9 - departing, 10 - hangar
 	*/
+	int m_ap_index;
 	int m_airline; //index of airline
 	int m_airstrip; // index of airstrip
 	double m_fuel; // percentage of fuel in airplane
@@ -41,7 +46,7 @@ private:
 	status_t m_status;
 public:
 	Samolot();
-	Samolot(const Samolot &tmp_plane);
+	Samolot(Samolot* tmp_plane);
 	~Samolot();
 	void fly_to_airport();
 	int get_dest();
@@ -51,6 +56,8 @@ public:
 	void whereAmI();
 	void whatAmIDoing();
 	int get_plane_index();
+	int get_ap_index();
+	void set_ap_index(int index);
 	int get_capacity();
 	int get_passengers();
 	void set_passengers(int target_passengers);
@@ -65,3 +72,4 @@ public:
 	void increment_status();*/
 	
 };
+#endif

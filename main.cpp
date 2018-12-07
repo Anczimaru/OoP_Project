@@ -7,14 +7,18 @@
 #include <ctime>
 
 using namespace std;
+char time_buffer [80];
 
 
 void initialize()
 {
+	cout<<"Starting initialization"<<endl;
+	cout << " Size of samoloty: " << samoloty.size() << endl;
 	// INITIAL PLANE ASSIGNING
 	for (int i = 0; i < samoloty.size(); i++)
 	{
 		int dest_index = (samoloty[i]->get_dest());
+		cout<<dest_index<<endl;
 		lotniska[(dest_index - 1)]->register_plane(samoloty[i]);
 	}
 	cout << "\n \n Size of samoloty: " << samoloty.size() << endl;
@@ -22,17 +26,27 @@ void initialize()
 }
 
 
-void runner(int n_hours_to_simulate = 1)
+
+void runner(int n_hours_to_simulate = 10)
 {
+	int selected_airport;
 	do
 	{
+		int time_print_flag=0;
 		for (int i=0; i<EventSchedule.size(); i++)
 			{
-				if (EventSchedule[i] = current_time)
+				
+				if (EventSchedule[i] <= current_time)
 					{
-						int has_to_do = samoloty[i] -> get_dest();
-						cout<< current_time <<" ### AIRPORT no: "<<has_to_do<<" ### "<<endl;
-						lotniska[has_to_do-1]->do_routine();
+						if (time_print_flag==0)
+							{
+							strftime(time_buffer,80,"%F %X",localtime(&current_time));
+							cout<<time_buffer<<"----------------------"<<endl;
+							time_print_flag =1;
+							}
+						selected_airport = (samoloty[i]->get_ap_index());
+						cout<<"		AIRPORT no: "<<selected_airport<<endl;
+						lotniska[selected_airport-1]->do_routine();
 
 					}
 
@@ -41,10 +55,9 @@ void runner(int n_hours_to_simulate = 1)
 
 
 
-		
+		time_print_flag =0;
 		current_time+=5*60;
-	// } while (current_time <= init_time + 60*60*n_hours_to_simulate);
-	}while(current_time <= 960422520);
+	}while(current_time <= init_time+3600*n_hours_to_simulate);
 	cout<< "######################## Finished simulation, cleaning up ########################\n\n"<<endl;
 }
 
@@ -59,10 +72,9 @@ int main()
 	t.reserve_line(&Dupowo, &p2);
 	t.reserve_line(&Dupowo, &p3);
 	t.show_occupancy();
-	//Airport Los_Angles, Katowice, London;
-	//Samolot p1, p2;
-	/*initialize();
-	runner();*/
+	Airport Los_Angles, Katowice, London;
+	initialize();
+	runner();
 	
 	return 0;
 }

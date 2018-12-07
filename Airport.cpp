@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "Samolot.h"
+#include <memory>
 
 
 using namespace std;
@@ -49,11 +50,13 @@ Airport::~Airport()
 }
 
 //FUNCTIONS
-void Airport::register_plane(Samolot* m_tmp_plane)
+void Airport::register_plane(std::shared_ptr<Samolot> m_tmp_plane)
 {
-	przypisane_samoloty.push_back(make_shared<Samolot>(*m_tmp_plane));
-	cout << "Airport: " << m_index_ap << " registered plane with index: " << przypisane_samoloty.back()->get_plane_index() << endl;
+	przypisane_samoloty.push_back(m_tmp_plane);
+	int pl_index = przypisane_samoloty.back()->get_plane_index();
+	cout << "Airport: " << m_index_ap << " registered plane with index: " <<pl_index << endl;
 	przypisane_samoloty.back()->fly_to_airport();
+	przypisane_samoloty.back()->set_ap_index(m_index_ap);
 }
 
 
@@ -116,19 +119,19 @@ void Airport::do_routine()
 {
 	//FUNCTION ITERATES OVER VECTOR OF PRZYPISANE_SAMOLOTY, and does routine on everysingle one of them
 	if (przypisane_samoloty.size() > 0)
-	{
-		for (int i = 0; i < przypisane_samoloty.size(); i++)
 		{
-			if (EventSchedule[przypisane_samoloty[i]->get_plane_index()-1] == current_time)
+		for (int i = 0; i < przypisane_samoloty.size(); i++)
+			{
+			if (EventSchedule[(przypisane_samoloty[i]->get_plane_index())-1] == current_time)
 				{
-					do_routine_on_plane(przypisane_samoloty[i].get());
-					if (przypisane_samoloty[i]->get_status() == flying_away)
-						{
-							take_off(przypisane_samoloty[i].get());
-							przypisane_samoloty.erase(przypisane_samoloty.begin() + i);
-						}
+				do_routine_on_plane(przypisane_samoloty[i].get());
+				if (przypisane_samoloty[i]->get_status() == flying_away)
+					{
+					take_off(przypisane_samoloty[i].get());
+					przypisane_samoloty.erase(przypisane_samoloty.begin() + i);
+					}
 				}
-		}
+			}
 	}
 	/////////////               UNCOMENT LATER ON !!!!!!!!!!!!!!! //////////////
 	// else cout<<"    Airport no: "<<m_index_ap<<" is empty"<<endl; 
@@ -194,10 +197,9 @@ void Airport::take_off(Samolot* m_tmp_plane)
 {
 	int dest_index = m_tmp_plane->get_dest();
 	m_tmp_plane->set_status(flying);
-	cout << "Reassigning plane no: " << m_tmp_plane->get_plane_index() << " from: " << m_index_ap << " to: " << dest_index << endl;
-	lotniska[(dest_index - 1)]->register_plane(m_tmp_plane);
-
-
+	int plane_index = m_tmp_plane->get_plane_index();
+	cout << "Reassigning plane no: " << plane_index  << " from: " << m_index_ap << " to: " << dest_index << endl;
+	lotniska[(dest_index - 1)]->register_plane(samoloty[plane_index-1]);
 
 }
 

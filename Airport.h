@@ -23,10 +23,10 @@ private:
 
 public:
 	Airport();
-	Airport(int lines);
 	Airport(const Airport &airport);
+	Airport(int lanes);
 	~Airport();
-	void register_plane(Samolot * m_tmp_plane);
+	void register_plane(std::shared_ptr<Samolot>m_tmp_plane);
 	void do_routine_on_plane(Samolot * m_tmp_plane);
 	void do_routine();
 	void land(Samolot * m_tmp_plane);
