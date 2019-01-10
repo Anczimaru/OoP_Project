@@ -123,8 +123,6 @@ void Samolot::set_tech_state(double target_state)
 }
 
 //STATUS OF PLANE
-
-////////////////////////////////   Czy potrzebujemy dw�ch funckji set_status() ???/////////////////////////////
 status_t Samolot::get_status()
 {
 	return m_status;
@@ -134,6 +132,10 @@ void Samolot::set_status(status_t tmp_status)
 	m_status = tmp_status;
 }
 
+int Samolot::get_speed()
+{
+	return m_speed;
+}
 //TEST FUNCTION
 void Samolot::whereAmI()
 {
@@ -148,7 +150,7 @@ void Samolot::whatAmIDoing()
 }
 bool Samolot::call_emergency()
 {
-	
+
 	if ((get_fuel()<= 0.5) || (get_tech_state() <= 0.75))
 	{
 		cout << "Emergency calling for plane: " <<get_plane_index()<< endl;
@@ -161,4 +163,3 @@ bool Samolot::call_emergency()
 		return false;
 	}
 }
-

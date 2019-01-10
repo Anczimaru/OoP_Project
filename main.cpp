@@ -6,14 +6,16 @@
 #include <vector>
 #include <ctime>
 #include <string>
-#include <Windows.h>>
+
+//Variables
 using namespace std;
 char time_buffer [80];
-int always_print = 0; 
+int always_print = 0;
 
 
 void initialize()
 {
+	/* Takes care of assigning planes into proper places */
 	cout<<"Starting initialization"<<endl;
 	cout << " Size of samoloty: " << samoloty.size() << endl;
 	// INITIAL PLANE ASSIGNING
@@ -29,6 +31,7 @@ void initialize()
 
 void runner(int n_hours_to_simulate = 10)
 {
+	/*Simulate for some time */
 	int selected_airport;
 	do
 	{
@@ -41,7 +44,7 @@ void runner(int n_hours_to_simulate = 10)
 		for (int i = 0; i < EventSchedule.size(); i++)
 		{
 
-			if (EventSchedule[i] <= current_time) // IF TIME IS RIGHT DO STUFF
+			if (EventSchedule[i] == current_time) // IF TIME IS RIGHT DO STUFF
 			{
 				if (time_print_flag == 0) // if didnt print yet do it
 				{
@@ -54,7 +57,6 @@ void runner(int n_hours_to_simulate = 10)
 				}
 				// find proper ap to do stuff in proper time
 				selected_airport = (samoloty[i]->get_ap_index());
-				std::cout << "		AIRPORT no: " << selected_airport << endl;
 				lotniska[selected_airport - 1]->do_routine();
 			}
 
@@ -64,7 +66,7 @@ void runner(int n_hours_to_simulate = 10)
 
 
 		time_print_flag = 0; //clear flag
-		current_time += 5 * 60; // MOVE INTO THE FUTURE
+		current_time +=60; // MOVE INTO THE FUTURE
 	} while (current_time <= init_time + 3600 * n_hours_to_simulate);
 	std::cout << "######################## Finished simulation, cleaning up ########################\n\n" << endl;
 }
@@ -103,9 +105,9 @@ void clear_airports() // clearing memory after
 int main()
 {
 	srand(time(NULL));
-	
+
 	debug = 0; //check debug mode
-	always_print = 1; // if 1 writes in 5 min intervals, if 0 writes when needed
+	always_print = 0; // if 1 writes in 5 min intervals, if 0 writes when needed
 	//Airport Los_Angles(1500,-1500,5), Katowice(200,100,5), London(400,-400,5), Moscow(1000,2000,10);
 	//Samolot p1,p2,p3,p4,p5,p6,p7;
 	create_airports(4);
@@ -113,6 +115,6 @@ int main()
 	initialize();
 	runner();
 	clear_airports();
-	
+
 	return 0;
 }
