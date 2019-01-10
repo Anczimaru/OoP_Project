@@ -25,6 +25,7 @@ extern vector <shared_ptr<Samolot>> samoloty;
 extern time_t init_time;
 extern time_t current_time;
 extern vector <time_t> EventSchedule;
+extern int debug;
 
 
 class Samolot
@@ -41,11 +42,13 @@ private:
 	int m_ap_index;
 	int m_airline; //index of airline
 	int m_airstrip; // index of airstrip
+	int m_speed; //velovity of a plane
 	double m_fuel; // percentage of fuel in airplane
 	double m_tech_state; //percentage of airplane maintenance
 	status_t m_status;
 public:
 	Samolot();
+	Samolot(double fuel, double tech);
 	Samolot(Samolot* tmp_plane);
 	~Samolot();
 	void fly_to_airport();
@@ -67,7 +70,8 @@ public:
 	void set_tech_state(double target_state);
 	status_t get_status();
 	void set_status(status_t tmp_status);
-	
+	bool call_emergency();
+	int get_speed();
 	/*void set_status(int i);
 	void increment_status();*/
 	

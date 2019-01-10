@@ -1,0 +1,18 @@
+﻿1.Widziałem,że się dzieje jakieś mambo dżambo przy rutynie lądującej. To musimy ogarnąć.
+1b. Funkcja generująca indeks lotniska : wiem że pierwotna wersja działała dla prostszego kodu.
+	Prawdopodobnie to wciąż działa, ale odnosząc się do 1) musimy sprawdzić indeksowanie źródła/destynacji
+2. Nie za bardzo rozumiem potrzeby randomizacji statusu samolotu. Teoretycznie może się pojawić w powietrzu
+	na potrzebę programu i do testów, ale czy jest to rzeczywiście w CHUJ potrzebne? #Dyskusja
+3. Pochwalam pomysł z debugiem
+4. Póki co, to mamy prędkość, ale gówno z nią robimy. Także funkcja licząca czas lotu jak znalazł.
+5. Automatyzacja (?)
+6. Używam Tower jako POD. W tym bawię się w macierze (tablice 2D). Czy chcemy się bawić w wektory?
+
+
+Zmiany na wersji:
+
+1. Wprowadzenie nowej klasy Point jako POD.
+2. Zmiana funcjonalności klasy Tower => od teraz działa jako POD. Złamany circle dependation
+3. Automatyzacja w tworzeniu samolotów, lotnisk
+4. Dodanie funkcjonalności dla klasy Airport. Klasa Samolot zawiera nowe pole
+5. Ulepszenie funkcjonalnośći funcki runner() w main.cpp

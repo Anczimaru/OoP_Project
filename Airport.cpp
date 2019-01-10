@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "Airport.h"
+#include "Tower.h"
+#include "Point.h"
 #include <iostream>
 #include <vector>
 #include "Samolot.h"
 #include <memory>
+#include <cmath>
 
 
 using namespace std;
@@ -24,16 +27,17 @@ int RandomizeAirportIndex()
 
 //CONSTR AND DECONSTR
 Airport::Airport() :
-	m_index_ap(lotniska.size()+1), m_waiting_ppl(200),m_no_lines(2)
+	m_index_ap(lotniska.size()+1), m_waiting_ppl(200),m_no_lines(2),m_tower(this),m_position(0,0)
 {
 	lotniska.push_back(this);
 	cout << "Airport created with index no: " << m_index_ap << endl;
 }
-Airport::Airport(int lines) :
-	m_index_ap(lotniska.size() + 1), m_waiting_ppl(200)
+Airport::Airport(double x,double y ,int lines) :
+	m_index_ap(lotniska.size() + 1), m_waiting_ppl(200),m_position(x,y)
 
 {
 	m_no_lines = lines;
+	this->m_tower;
 	lotniska.push_back(this);
 	cout << "Airport created with index no: " << m_index_ap << endl;
 }
@@ -142,7 +146,7 @@ void Airport::do_routine()
 
 }
 //ROUTINE SUB FUNCTIONS
-void Airport::land(Samolot* m_tmp_plane) ///////////////// DO POPRAWKI
+void Airport::land(Samolot* m_tmp_plane) ///////////////// DO POPRAWKI///////////////		OLEK : ZDECYDOWANIE KURWA DO POPRAWKI 
 {
 	do
 	{
@@ -212,7 +216,99 @@ int Airport::get_airport_size()
 	return m_no_lines;
 }
 
-// int wait_in_hangar(int how_long, int how_long_left)
-//     {
-//         //sleep for x ticks, x1 - trackers of sleept time
-//     }
+void Airport::show_occupancy()
+{
+	cout << "Current state of lanes: \n";
+	for (int i = 0; i < m_tower.lines; i++)
+	{
+		for (int j = 0; j < 1; j++) {
+			cout << m_tower.m_lines[i][j] << " " << m_tower.m_lines[i][j + 1] << '\n';
+		}
+	}
+}
+
+void Airport::reserve_lane(Samolot* tmp_plane)
+{
+	int i = get_airport_size();
+	//cout << "NUMBER OF LINES: " << i << endl;
+	int out = 0;
+
+	do
+	{
+
+		if ((tmp_plane->get_status() == landing) || (tmp_plane->get_status() == waiting)) {
+			if (i == 0)
+			{
+				cout << "We cannot reserve a line for you plane: " << tmp_plane->get_plane_index() << endl;
+				tmp_plane->set_status(waiting);
+			}
+			else if (m_tower.m_lines[i - 1][1] == 0)
+			{
+				if (tmp_plane->get_status() == waiting)
+				{
+					tmp_plane->set_status(landing);
+				}
+				m_tower.m_lines[i - 1][1] = tmp_plane->get_plane_index();
+				out = 1;
+				cout << "Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
+				do_routine_on_plane(tmp_plane);
+			}
+
+
+
+
+		}
+		else if (m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index())
+		{
+			cout << "A lane has already been reserved for: " << tmp_plane->get_plane_index() << endl;
+			out = 1;
+		}
+		i--;
+
+	} while ((out == 0) && (i >= 0));
+
+	show_occupancy();
+}
+
+void Airport::release_lane(Samolot* tmp_plane)
+{
+	if (tmp_plane->get_status() == departing)
+	{
+		int reserved_nr = tmp_plane->get_plane_index();
+		for (int i = 0; i < m_tower.lines; i++)
+		{
+			if (m_tower.m_lines[i][1] == reserved_nr)
+			{
+				m_tower.m_lines[i][1] = 0;
+				do_routine_on_plane(tmp_plane);
+			}
+		}
+	}
+	show_occupancy();
+}
+
+void Airport::prioritize(Samolot* tmp_plane)
+{
+	bool emerg = tmp_plane->call_emergency();
+	if (emerg)
+	{
+		tmp_plane->set_status(landing);
+		reserve_lane(tmp_plane);
+	}
+	else
+	{
+		tmp_plane->set_status(waiting);
+	}
+}
+
+Point Airport::get_position()
+{
+	return m_position;
+}
+
+double Airport::get_distane_from(int dest_index)
+{
+	Point tmp_src_pos = get_position();
+	Point tmp_dst_pos = lotniska[dest_index - 1]->get_position();
+	return tmp_src_pos - tmp_dst_pos;
+}

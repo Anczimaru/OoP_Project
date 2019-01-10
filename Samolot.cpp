@@ -10,32 +10,48 @@ time_t init_time = 960420420;
 time_t current_time = init_time;
 vector <shared_ptr<Samolot>> samoloty;
 vector <time_t> EventSchedule;
+int debug;
+
+
+status_t RandomizeStatus()
+{
+	return (status_t)(1 + rand() % 9);
+}
 
 //Constructor
-Samolot::Samolot() :m_dest(1), m_src(2), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(0.78), m_tech_state(0.99), m_index(samoloty.size()+1),m_ap_index(1)
+Samolot::Samolot() :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_status(RandomizeStatus()), m_fuel(0.78), m_tech_state(0.99), m_index(samoloty.size()+1),m_ap_index(1),m_speed(300)
 {
+	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));
 	EventSchedule.push_back(init_time);
-	cout <<	"Im plane with no:"<<m_index<<endl;
+	//cout <<	"Im plane with no:"<<m_index<<endl;
+}
+Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1)
+{
+	cout << "Created plane with no:" << m_index << endl;
+	samoloty.push_back(make_shared<Samolot>(this));
+	EventSchedule.push_back(init_time);
+	//cout << "Im plane with no:" << m_index << endl;
 }
 //COPYING CONSTRUTOR
 Samolot::Samolot(Samolot* tmp_plane) :
 		m_dest(tmp_plane->get_dest()), m_src(tmp_plane->get_src()), m_capacity(tmp_plane->get_capacity()), m_passengers(tmp_plane->get_passengers()),
-		m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()), m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()),m_ap_index(tmp_plane->get_ap_index())
+		m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()), m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()),m_ap_index(tmp_plane->get_ap_index()),m_speed(tmp_plane->get_speed())
 {
+	if (debug == 1)
 		cout << "   Copying glorious plane with index: " << m_index << endl;
 }
 
 Samolot::~Samolot()
 {
-	//cout << "Usuwam kurwa samolot\n";
+	if (debug == 1) cout << "Destroying plane no: " << m_index << endl;
 }
 
 
 //FUNCTIONS
 void Samolot:: fly_to_airport()
 {
-	cout << "Hi, Im plane number: " << m_index << "\tIm flying to: " << m_dest << "\tfrom: " << m_src << endl;
+	if (debug == 1) cout << "Hi, Im plane number: " << m_index << "\tIm flying to: " << m_dest << "\tfrom: " << m_src << endl;
 }
 
 //SETTERS AND GETTERS section
@@ -129,5 +145,20 @@ void Samolot::whatAmIDoing()
 	cout<<"I'm "<<get_status()<<" ,my dest "<<get_dest()<<" ,from "<<get_src()<<endl;
 
 
+}
+bool Samolot::call_emergency()
+{
+	
+	if ((get_fuel()<= 0.5) || (get_tech_state() <= 0.75))
+	{
+		cout << "Emergency calling for plane: " <<get_plane_index()<< endl;
+		set_status(waiting);
+		return true;
+	}
+	else
+	{
+		cout << "No emergency for plane: " << get_plane_index() << endl;
+		return false;
+	}
 }
 

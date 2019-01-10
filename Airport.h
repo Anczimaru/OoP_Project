@@ -1,17 +1,26 @@
-#pragma once
+#ifndef AIRPORT_H
+#define AIRPORT_H
+
 #include "pch.h"
 #include "Samolot.h"
+#include "Tower.h"
+#include "Point.h"
 #include <vector>
 #include <iostream>
 #include <memory>
 #include <ctime>
+#include <cmath>
+
 
 using namespace std;
-class Airport;
 
+
+class Airport;
 
 extern vector <Airport*> lotniska;
 extern vector <time_t> EventSchedule;
+
+
 
 class Airport
 {
@@ -20,11 +29,13 @@ private:
 	int m_waiting_ppl;
 	vector <std::shared_ptr<Samolot>> przypisane_samoloty;
 	int m_no_lines;
+	Tower m_tower;
+	Point m_position;
 
 public:
 	Airport();
 	Airport(const Airport &airport);
-	Airport(int lanes);
+	Airport(double x, double y,int lanes);
 	~Airport();
 	void register_plane(std::shared_ptr<Samolot>m_tmp_plane);
 	void do_routine_on_plane(Samolot * m_tmp_plane);
@@ -37,6 +48,13 @@ public:
 	void take_off(Samolot * m_tmp_plane);
 	int get_airport_index();
 	int get_airport_size();
-	
-
+	void show_occupancy();
+	void reserve_lane(Samolot* tmp_plane);
+	void release_lane(Samolot* tmp_plane);
+	void prioritize(Samolot* tmp_plane);
+	Point get_position();
+	double get_distane_from(int dest_index);
 };
+
+
+#endif 
