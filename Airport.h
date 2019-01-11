@@ -54,6 +54,7 @@ public:
 	void prioritize(Samolot* tmp_plane);
 	Point get_position();
 	double get_distane_from(int dest_index);
+	void register_lane(std::shared_ptr<Samolot>tmp_plane);
 };
 
 

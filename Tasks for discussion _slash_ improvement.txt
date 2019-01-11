@@ -1,18 +1,14 @@
-﻿1.Widziałem,że się dzieje jakieś mambo dżambo przy rutynie lądującej. To musimy ogarnąć.
-1b. Funkcja generująca indeks lotniska : wiem że pierwotna wersja działała dla prostszego kodu.
-	Prawdopodobnie to wciąż działa, ale odnosząc się do 1) musimy sprawdzić indeksowanie źródła/destynacji
-2. Nie za bardzo rozumiem potrzeby randomizacji statusu samolotu. Teoretycznie może się pojawić w powietrzu
-	na potrzebę programu i do testów, ale czy jest to rzeczywiście w CHUJ potrzebne? #Dyskusja
-3. Pochwalam pomysł z debugiem
-4. Póki co, to mamy prędkość, ale gówno z nią robimy. Także funkcja licząca czas lotu jak znalazł.
-5. Automatyzacja (?)
-6. Używam Tower jako POD. W tym bawię się w macierze (tablice 2D). Czy chcemy się bawić w wektory?
+﻿ToDo:
+1. Komentarze w funkcji land(). Wg mnie nie potrzebnie się bawimy w zmianę indeksów samolotów które lądują. Nawet to nie jest logiczne. Funkcja zmian indeksów, wg mnie powinna być w rejestracji samolotu. Np, przeszliśmy 
+ wszystkie rutyny, całego tego FSM'a i dopiero WTEDY definiujemy gdzie leci. Więc de facto, osobiście uważam że w landzie powinna być tylko funkcja prioritize() {wywołuje funkcje o awariach i funkcje do przypisywania pasu} oraz
+ jakaś funkcja do wypisywania
+2. Funckja do przewidywania przylotu
+3. Ważna rzecz : kontrola nad indeksami!!!
+4 Automatyzacja (?)
+
 
 
 Zmiany na wersji:
 
-1. Wprowadzenie nowej klasy Point jako POD.
-2. Zmiana funcjonalności klasy Tower => od teraz działa jako POD. Złamany circle dependation
-3. Automatyzacja w tworzeniu samolotów, lotnisk
-4. Dodanie funkcjonalności dla klasy Airport. Klasa Samolot zawiera nowe pole
-5. Ulepszenie funkcjonalnośći funcki runner() w main.cpp
+1. Dodanie funkcjonalności dla register_plane() , take_off(), do_routine {statusy: flying i waiting}
+2. Poprawa destruktora klasy Tower

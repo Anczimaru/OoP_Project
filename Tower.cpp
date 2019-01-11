@@ -51,6 +51,9 @@ Tower::Tower(Airport* tmp_air)
 Tower::~Tower()
 {
 	//cout << "Deleting tower nr: " << get_tower_index() << endl;
-	delete[] * m_lines;
+	for (int i = 0; i < lines; i++)
+		delete[] m_lines[i];
 
+	delete[] m_lines;
+;
 }

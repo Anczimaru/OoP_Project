@@ -26,7 +26,7 @@ Samolot::Samolot() :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_sta
 	EventSchedule.push_back(init_time);
 	//cout <<	"Im plane with no:"<<m_index<<endl;
 }
-Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_status(flying), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1)
+Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_status(waiting), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));

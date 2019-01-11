@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Airport.h"
 #include "Tower.h"
 #include "Point.h"
@@ -33,11 +33,10 @@ Airport::Airport() :
 	cout << "Airport created with index no: " << m_index_ap << endl;
 }
 Airport::Airport(double x,double y ,int lines) :
-	m_index_ap(lotniska.size() + 1), m_waiting_ppl(200),m_position(x,y)
+	m_index_ap(lotniska.size() + 1), m_waiting_ppl(200),m_position(x,y),m_tower(this),m_no_lines(lines)
 
 {
-	m_no_lines = lines;
-	this->m_tower;
+	
 	lotniska.push_back(this);
 	cout << "Airport created with index no: " << m_index_ap << endl;
 }
@@ -57,6 +56,8 @@ Airport::~Airport()
 void Airport::register_plane(std::shared_ptr<Samolot> m_tmp_plane)
 {
 	przypisane_samoloty.push_back(m_tmp_plane);
+	register_lane(przypisane_samoloty.back());
+	
 	int pl_index = przypisane_samoloty.back()->get_plane_index();
 	cout << "Airport: " << m_index_ap << " registered plane with index: " <<pl_index << endl;
 	przypisane_samoloty.back()->fly_to_airport();
@@ -73,12 +74,12 @@ void Airport::do_routine_on_plane(Samolot* m_tmp_plane)
 	switch (m_tmp_plane->get_status())
 	{
 	case status_t::flying:
-		m_tmp_plane->set_status(waiting);
+		prioritize(m_tmp_plane);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is flying" << endl;
 		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
 	case status_t::waiting:
-		m_tmp_plane->set_status(landing);
+		reserve_lane(m_tmp_plane);
 		cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is waiting for landing" << endl;
 		EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 		break;
@@ -166,11 +167,12 @@ void Airport::land(Samolot* m_tmp_plane) ///////////////// DO POPRAWKI//////////
 {
 	do
 	{
-		m_tmp_plane->set_dest(RandomizeAirportIndex());
+		m_tmp_plane->set_dest(RandomizeAirportIndex());  // czy to tutaj jest potrzebne? nie powinno to być wybierane w rejestracji samolotu / przy startowaniu? To na pewno wcześniej było w funkcji register_plane()
 
 	} while ((m_tmp_plane->get_dest()) == m_index_ap);
+	
 
-	m_tmp_plane->set_src(m_index_ap);
+	m_tmp_plane->set_src(m_index_ap);  // dlaczego? jak wyżej, uważam że to powinno być w rejestracji, albo przy starcie
 	m_tmp_plane->fly_to_airport();
 	//wyladuje samolot
 
@@ -217,10 +219,12 @@ void Airport::take_off(Samolot* m_tmp_plane)
 {
 	int dest_index = m_tmp_plane->get_dest();
 	int src_index =  m_tmp_plane ->get_src();
+	release_lane(m_tmp_plane);
 	m_tmp_plane->set_status(flying);
 	int plane_index = m_tmp_plane->get_plane_index();
 	cout << "Reassigning plane no: " << plane_index  << " from: " <<src_index << " to: " << dest_index << endl;
 	lotniska[(dest_index - 1)]->register_plane(samoloty[plane_index-1]);
+	
 
 }
 
@@ -328,4 +332,40 @@ double Airport::get_distane_from(int dest_index)
 	Point tmp_src_pos = get_position();
 	Point tmp_dst_pos = lotniska[dest_index - 1]->get_position();
 	return tmp_src_pos - tmp_dst_pos;
+}
+
+
+void Airport::register_lane(std::shared_ptr<Samolot>tmp_plane)
+{
+	przypisane_samoloty.push_back(tmp_plane);
+	int i = get_airport_size();
+	//cout << "NUMBER OF LINES: " << i << endl;
+	int out = 0;
+
+	do
+	{
+
+	
+			if (i == 0)
+			{
+				return;
+			}
+			else if (m_tower.m_lines[i - 1][1] == 0)
+			{
+				przypisane_samoloty.back()->set_status(waiting);
+			
+				m_tower.m_lines[i - 1][1] = przypisane_samoloty.back()->get_plane_index();
+				out = 1;
+				cout << "Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << przypisane_samoloty.back()->get_plane_index() << endl;
+				
+			}
+			
+
+
+
+	
+			i--;
+
+	} while ((out == 0) && (i >= 0));
+	show_occupancy();
 }
