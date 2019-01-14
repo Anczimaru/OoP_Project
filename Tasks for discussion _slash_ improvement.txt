@@ -1,5 +1,5 @@
 ﻿ToDo:
-1. Komentarze w funkcji land(). Wg mnie nie potrzebnie się bawimy w zmianę indeksów samolotów które lądują. Nawet to nie jest logiczne. Funkcja zmian indeksów, wg mnie powinna być w rejestracji samolotu. Np, przeszliśmy 
+1. Komentarze w funkcji land(). Wg mnie nie potrzebnie się bawimy w zmianę indeksów samolotów które lądują. Nawet to nie jest logiczne. Funkcja zmian indeksów, wg mnie powinna być w rejestracji samolotu. Np, przeszliśmy
  wszystkie rutyny, całego tego FSM'a i dopiero WTEDY definiujemy gdzie leci. Więc de facto, osobiście uważam że w landzie powinna być tylko funkcja prioritize() {wywołuje funkcje o awariach i funkcje do przypisywania pasu} oraz
  jakaś funkcja do wypisywania
 2. Funckja do przewidywania przylotu
@@ -12,3 +12,5 @@ Zmiany na wersji:
 
 1. Dodanie funkcjonalności dla register_plane() , take_off(), do_routine {statusy: flying i waiting}
 2. Poprawa destruktora klasy Tower
+3. Clean up
+4. Zaleznosc czasu lotu od odlelosci

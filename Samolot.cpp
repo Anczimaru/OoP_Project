@@ -15,18 +15,18 @@ int debug;
 
 status_t RandomizeStatus()
 {
-	return (status_t)(1 + rand() % 9);
+	return (status_t)(1 + rand() % 6);
 }
 
 //Constructor
-Samolot::Samolot() :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_status(RandomizeStatus()), m_fuel(0.78), m_tech_state(0.99), m_index(samoloty.size()+1),m_ap_index(1),m_speed(300)
+Samolot::Samolot() : m_dest(2), m_src(1), m_status(RandomizeStatus()),  m_fuel(0.9), m_tech_state(0.8), m_index(samoloty.size()+1),m_ap_index(1),m_speed(300)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));
 	EventSchedule.push_back(init_time);
 	//cout <<	"Im plane with no:"<<m_index<<endl;
 }
-Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_capacity(80), m_passengers(60), m_status(waiting), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1)
+Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));
@@ -35,8 +35,8 @@ Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_capacity(80),
 }
 //COPYING CONSTRUTOR
 Samolot::Samolot(Samolot* tmp_plane) :
-		m_dest(tmp_plane->get_dest()), m_src(tmp_plane->get_src()), m_capacity(tmp_plane->get_capacity()), m_passengers(tmp_plane->get_passengers()),
-		m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()), m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()),m_ap_index(tmp_plane->get_ap_index()),m_speed(tmp_plane->get_speed())
+		m_dest(tmp_plane->get_dest()), m_src(tmp_plane->get_src()), m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()),
+		m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()), m_ap_index(tmp_plane->get_ap_index()),m_speed(tmp_plane->get_speed())
 {
 	if (debug == 1)
 		cout << "   Copying glorious plane with index: " << m_index << endl;
@@ -88,20 +88,6 @@ int Samolot::get_ap_index()
 void Samolot::set_ap_index(int index)
 {
 	m_ap_index = index;
-}
-
-//PASSENGERS
-int Samolot::get_capacity()
-{
-	return m_capacity;
-}
-int Samolot::get_passengers()
-{
-	return m_passengers;
-}
-void Samolot::set_passengers(int target_passengers)
-{
-	m_passengers = target_passengers;
 }
 
 //FUEL AND TECH STATE

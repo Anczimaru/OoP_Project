@@ -37,25 +37,28 @@ public:
 	Airport(const Airport &airport);
 	Airport(double x, double y,int lanes);
 	~Airport();
+
+	//Plane manipulation
 	void register_plane(std::shared_ptr<Samolot>m_tmp_plane);
 	void do_routine_on_plane(Samolot * m_tmp_plane);
 	void do_routine();
 	void land(Samolot * m_tmp_plane);
-	void load(Samolot * m_tmp_plane);
-	void unload(Samolot * m_tmp_plane);
-	void refuel(Samolot * m_tmp_plane);
-	void repair(Samolot * m_tmp_plane);
+	void service(Samolot * m_tmp_plane);
 	void take_off(Samolot * m_tmp_plane);
-	int get_airport_index();
-	int get_airport_size();
-	void show_occupancy();
+
+	//Lane operations
 	void reserve_lane(Samolot* tmp_plane);
 	void release_lane(Samolot* tmp_plane);
 	void prioritize(Samolot* tmp_plane);
-	Point get_position();
-	double get_distane_from(int dest_index);
 	void register_lane(std::shared_ptr<Samolot>tmp_plane);
+
+	//Getters
+	Point get_position();
+	int get_airport_index();
+	int get_airport_size();
+	double get_distane_from(int dest_index);
+	void show_occupancy();
 };
 
 
-#endif 
+#endif

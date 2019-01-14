@@ -11,12 +11,9 @@ typedef enum {
 	flying = 1,
 	waiting = 2,
 	landing = 3,
-	unloading = 4,
-	repairing = 5,
-	refueling = 6,
-	loading = 7,
-	departing = 8,
-	flying_away = 9
+	maintenance = 4,
+	departing = 5,
+	flying_away = 6
 }status_t;
 
 using namespace std;
@@ -32,19 +29,11 @@ class Samolot
 {
 private:
 	int m_dest, m_src; //indexes of airports
-	int m_passengers; //no of passengers
-	int m_capacity; // capacity of num of passengers
-	int m_gate; //index of m_gate
-	int m_index; //index of airplane
-	/*
-	1 - flying, 2 - waiting, 3 - landing, 4 - unloading, 5 - maintenance, 6 - repairs, 7 - refueling, 8 - loading, 9 - departing, 10 - hangar
-	*/
 	int m_ap_index;
-	int m_airline; //index of airline
-	int m_airstrip; // index of airstrip
+	int m_index; //index of airplane
 	int m_speed; //velovity of a plane
-	double m_fuel; // percentage of fuel in airplane
-	double m_tech_state; //percentage of airplane maintenance
+	double m_tech_state;
+	double m_fuel;
 	status_t m_status;
 public:
 	Samolot();
@@ -61,9 +50,6 @@ public:
 	int get_plane_index();
 	int get_ap_index();
 	void set_ap_index(int index);
-	int get_capacity();
-	int get_passengers();
-	void set_passengers(int target_passengers);
 	double get_fuel();
 	void set_fuel(double target_fuel);
 	double get_tech_state();
@@ -74,6 +60,6 @@ public:
 	int get_speed();
 	/*void set_status(int i);
 	void increment_status();*/
-	
+
 };
 #endif
