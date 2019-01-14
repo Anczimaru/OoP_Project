@@ -33,6 +33,7 @@ Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(), m_f
 	EventSchedule.push_back(init_time);
 	//cout << "Im plane with no:" << m_index << endl;
 }
+
 //COPYING CONSTRUTOR
 Samolot::Samolot(Samolot* tmp_plane) :
 		m_dest(tmp_plane->get_dest()), m_src(tmp_plane->get_src()), m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()),
@@ -55,7 +56,6 @@ void Samolot:: fly_to_airport()
 }
 
 //SETTERS AND GETTERS section
-
 //DESTINATION
 void Samolot::set_dest(int target_dest)
 {
@@ -139,13 +139,13 @@ bool Samolot::call_emergency()
 
 	if ((get_fuel()<= 0.5) || (get_tech_state() <= 0.75))
 	{
-		cout << "Emergency calling for plane: " <<get_plane_index()<< endl;
+		cout << "!!!Emergency calling for plane: " <<get_plane_index()<< endl;
 		set_status(waiting);
 		return true;
 	}
 	else
 	{
-		cout << "No emergency for plane: " << get_plane_index() << endl;
+		if (debug == 1) cout << "No emergency for plane: " << get_plane_index() << endl;
 		return false;
 	}
 }

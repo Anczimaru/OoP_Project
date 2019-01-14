@@ -47,10 +47,11 @@ using namespace std;
 	{
 		przypisane_samoloty.push_back(m_tmp_plane);
 		cout << "Airport: " << m_index_ap << " registered plane with index: " <<przypisane_samoloty.back()->get_plane_index()<< endl;
-		register_lane(przypisane_samoloty.back());
+		if (EventSchedule[przypisane_samoloty.back()->get_plane_index()-1] == init_time) register_lane(przypisane_samoloty.back());
 		przypisane_samoloty.back()->fly_to_airport();
 		przypisane_samoloty.back()->set_ap_index(m_index_ap);
 	}
+
 
 
 //ROUTINES
@@ -126,13 +127,6 @@ using namespace std;
 					}
 				}
 			}
-		/////////////               UNCOMENT LATER ON !!!!!!!!!!!!!!! //////////////
-		// else cout<<"    Airport no: "<<m_index_ap<<" is empty"<<endl;
-
-
-
-
-
 	}
 
 
@@ -143,13 +137,10 @@ using namespace std;
 		do
 		{
 			tmp_dest = (rand() % (lotniska.size())+1);
-
 		} while (tmp_dest == m_index_ap );
 		m_tmp_plane->set_dest(tmp_dest);
-		m_tmp_plane->set_src(m_index_ap);  // dlaczego? jak wyżej, uważam że to powinno być w rejestracji, albo przy starcie
+		m_tmp_plane->set_src(m_index_ap);
 		m_tmp_plane->fly_to_airport();
-		//wyladuje samolot
-
 	}
 
 	void Airport::service(Samolot* m_tmp_plane)
@@ -284,6 +275,7 @@ using namespace std;
 
 	void Airport::prioritize(Samolot* tmp_plane)
 	{
+		if ((rand()%5) == 0) tmp_plane->set_fuel(0.3);
 		bool emerg = tmp_plane->call_emergency();
 		if (emerg)
 		{
