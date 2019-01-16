@@ -10,6 +10,7 @@
 #include <memory>
 #include <ctime>
 #include <cmath>
+#include <list>
 
 
 using namespace std;
@@ -38,6 +39,9 @@ public:
 	Airport(double x, double y,int lanes);
 	~Airport();
 
+	//List of priority plane indexes
+	list<int> priority_que;
+	
 	//Plane manipulation
 	void register_plane(std::shared_ptr<Samolot>m_tmp_plane);
 	void do_routine_on_plane(Samolot * m_tmp_plane);
@@ -56,6 +60,7 @@ public:
 	Point get_position();
 	int get_airport_index();
 	int get_airport_size();
+	int get_flight_time(int dest_index, int plane_index, int set);
 	double get_distane_from(int dest_index);
 	void show_occupancy();
 };

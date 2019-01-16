@@ -7,6 +7,8 @@
 #include "Samolot.h"
 #include <memory>
 #include <cmath>
+#include <list>
+#include <algorithm>
 
 
 using namespace std;
@@ -45,9 +47,10 @@ using namespace std;
 //FUNCTIONS
 	void Airport::register_plane(std::shared_ptr<Samolot> m_tmp_plane)
 	{
+		//register plane so that airport knows that it has to manipulate that particular plane
 		przypisane_samoloty.push_back(m_tmp_plane);
 		cout << "Airport: " << m_index_ap << " registered plane with index: " <<przypisane_samoloty.back()->get_plane_index()<< endl;
-		if (EventSchedule[przypisane_samoloty.back()->get_plane_index()-1] == init_time) register_lane(przypisane_samoloty.back());
+		// if (EventSchedule[przypisane_samoloty.back()->get_plane_index()-1] == init_time) register_lane(przypisane_samoloty.back());
 		przypisane_samoloty.back()->fly_to_airport();
 		przypisane_samoloty.back()->set_ap_index(m_index_ap);
 	}
@@ -63,31 +66,32 @@ using namespace std;
 		switch (m_tmp_plane->get_status())
 		{
 		case status_t::flying:
-			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is flying" << endl;
+			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is flying, ";
+			//set flight time of plane and it next event by calling this function
+			get_flight_time(m_tmp_plane->get_src(), m_tmp_plane->get_plane_index(), 1);
 			prioritize(m_tmp_plane);
-			EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
 			break;
 		case status_t::waiting:
 			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is waiting for landing" << endl;
 			reserve_lane(m_tmp_plane);
-			EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
+			EventSchedule[m_tmp_plane->get_plane_index()-1] += (5*60);
 			break;
 		case status_t::landing:
 			land(m_tmp_plane);
 			m_tmp_plane->set_status(maintenance);
-			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " landed" << endl;
-			EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
+			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is landing" << endl;
+			EventSchedule[m_tmp_plane->get_plane_index()-1] += (20*60);
 			break;
 		case status_t::maintenance:
 			service(m_tmp_plane);
 			m_tmp_plane->set_status(departing);
-			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " was serviced" << endl;
-			EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
+			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is being serviced" << endl;
+			EventSchedule[m_tmp_plane->get_plane_index()-1] += (60*60);
 			break;
 		case status_t::departing:
 			m_tmp_plane->set_status(flying_away);
 			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is leaving" << endl;
-			EventSchedule[m_tmp_plane->get_plane_index()-1] += (30*60);
+			EventSchedule[m_tmp_plane->get_plane_index()-1] += (20*60);
 			break;
 		}
 	}
@@ -133,14 +137,7 @@ using namespace std;
 //ROUTINE SUB FUNCTIONS
 	void Airport::land(Samolot* m_tmp_plane)
 	{
-		int tmp_dest;
-		do
-		{
-			tmp_dest = (rand() % (lotniska.size())+1);
-		} while (tmp_dest == m_index_ap );
-		m_tmp_plane->set_dest(tmp_dest);
-		m_tmp_plane->set_src(m_index_ap);
-		m_tmp_plane->fly_to_airport();
+		release_lane(m_tmp_plane);
 	}
 
 	void Airport::service(Samolot* m_tmp_plane)
@@ -153,8 +150,14 @@ using namespace std;
 
 	void Airport::take_off(Samolot* m_tmp_plane)
 	{
-
-		int dest_index = m_tmp_plane->get_dest();
+		int dest_index;
+		do
+		{
+			dest_index = (rand() % (lotniska.size())+1);
+		} while (dest_index == m_index_ap );
+		m_tmp_plane->set_dest(dest_index);
+		m_tmp_plane->set_src(m_index_ap);
+		m_tmp_plane->fly_to_airport();
 		int src_index =  m_tmp_plane ->get_src();
 		release_lane(m_tmp_plane);
 		m_tmp_plane->set_status(flying);
@@ -259,7 +262,7 @@ using namespace std;
 
 	void Airport::release_lane(Samolot* tmp_plane)
 	{
-		if (tmp_plane->get_status() == flying_away)
+		if ((tmp_plane->get_status() == flying_away) || (tmp_plane->get_status() == landing))
 		{
 			int reserved_nr = tmp_plane->get_plane_index();
 			for (int i = 0; i < m_tower.lines; i++)
@@ -279,6 +282,13 @@ using namespace std;
 		bool emerg = tmp_plane->call_emergency();
 		if (emerg)
 		{
+			////// newpiece of code
+			if (~(std::find(priority_que.begin(), priority_que.end(), tmp_plane->get_plane_index()) != priority_que.end()));
+			{
+				priority_que.push_back(tmp_plane->get_plane_index());
+				cout<<"Added priority case for: "<<tmp_plane->get_plane_index()<<endl;
+			}
+
 			tmp_plane->set_status(landing);
 			reserve_lane(tmp_plane);
 		}
@@ -298,4 +308,14 @@ using namespace std;
 		Point tmp_src_pos = get_position();
 		Point tmp_dst_pos = lotniska[dest_index - 1]->get_position();
 		return tmp_src_pos - tmp_dst_pos;
+	}
+
+
+	int Airport::get_flight_time(int dest_index, int plane_index, int set)
+	{
+		int distance = (int)get_distane_from(dest_index);
+		int flight_time = ceil(distance / samoloty[plane_index-1]->get_speed());
+		cout<< "estimated time of arrival: "<<flight_time<<endl;
+		if (set == 1) EventSchedule[plane_index-1] += (flight_time*60);
+		return flight_time;
 	}

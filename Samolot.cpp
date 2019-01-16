@@ -19,14 +19,14 @@ status_t RandomizeStatus()
 }
 
 //Constructor
-Samolot::Samolot() : m_dest(2), m_src(1), m_status(RandomizeStatus()),  m_fuel(0.9), m_tech_state(0.8), m_index(samoloty.size()+1),m_ap_index(1),m_speed(300)
+Samolot::Samolot() : m_dest(2), m_src(1), m_status(flying),  m_fuel(0.9), m_tech_state(0.8), m_index(samoloty.size()+1),m_ap_index(1), m_speed(10)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));
 	EventSchedule.push_back(init_time);
 	//cout <<	"Im plane with no:"<<m_index<<endl;
 }
-Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1)
+Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1), m_speed(10)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));

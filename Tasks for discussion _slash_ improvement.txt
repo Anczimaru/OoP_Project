@@ -1,16 +1,13 @@
 ﻿ToDo:
-1. Komentarze w funkcji land(). Wg mnie nie potrzebnie się bawimy w zmianę indeksów samolotów które lądują. Nawet to nie jest logiczne. Funkcja zmian indeksów, wg mnie powinna być w rejestracji samolotu. Np, przeszliśmy
- wszystkie rutyny, całego tego FSM'a i dopiero WTEDY definiujemy gdzie leci. Więc de facto, osobiście uważam że w landzie powinna być tylko funkcja prioritize() {wywołuje funkcje o awariach i funkcje do przypisywania pasu} oraz
- jakaś funkcja do wypisywania
-2. Funckja do przewidywania przylotu
-3. Ważna rzecz : kontrola nad indeksami!!!
-4 Automatyzacja (?)
-
+1. PACZ PKT 1.Samoloty powinien dostać pas jak chce wyladować, potem go zwolnić po wylądowaniu i znowu go dostać jak będzie chciał robić departure i znowu zwolnić przy flying away
+2. proponuje dodać coś jakieś que do tego kiedy jaki samolot ma lądować, coś na zasadzie że jeśli samolot został odrzucony, zeby dostawał priorytet do otrzymania linii
+3. przemyslec funkcje land
 
 
 Zmiany na wersji:
 
-1. Dodanie funkcjonalności dla register_plane() , take_off(), do_routine {statusy: flying i waiting}
-2. Poprawa destruktora klasy Tower
-3. Clean up
-4. Zaleznosc czasu lotu od odlelosci
+1. Zrobiłem zwalnianie pasu w funkcji land
+2. Zaleznosc czasu lotu od odlelosci
+3. Fine tuning tego ile co zajmuje
+4. przeniesienie indeksowania tylko i wyłącznie do funkcji take_off
+5. wylaczylem funkcje register lane w register_plane bo wychodza smieszne rzeczy w fsmie
