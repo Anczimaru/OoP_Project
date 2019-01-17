@@ -11,3 +11,8 @@ Zmiany na wersji:
 3. Fine tuning tego ile co zajmuje
 4. przeniesienie indeksowania tylko i wyłącznie do funkcji take_off
 5. wylaczylem funkcje register lane w register_plane bo wychodza smieszne rzeczy w fsmie
+
+
+
+komentarze:
+3 else if w reserve lane sie wykonuje wgl?

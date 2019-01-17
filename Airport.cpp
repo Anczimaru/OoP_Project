@@ -48,11 +48,18 @@ using namespace std;
 	void Airport::register_plane(std::shared_ptr<Samolot> m_tmp_plane)
 	{
 		//register plane so that airport knows that it has to manipulate that particular plane
-		przypisane_samoloty.push_back(m_tmp_plane);
-		cout << "Airport: " << m_index_ap << " registered plane with index: " <<przypisane_samoloty.back()->get_plane_index()<< endl;
+		int tmp_index = m_tmp_plane->get_plane_index();
+		przypisane_samoloty.insert(std::make_pair(tmp_index, m_tmp_plane));
 		// if (EventSchedule[przypisane_samoloty.back()->get_plane_index()-1] == init_time) register_lane(przypisane_samoloty.back());
-		przypisane_samoloty.back()->fly_to_airport();
-		przypisane_samoloty.back()->set_ap_index(m_index_ap);
+		std::map<int, std::shared_ptr<Samolot>>::iterator it = przypisane_samoloty.find(tmp_index);
+ 		if(it != przypisane_samoloty.end())
+		{
+			cout << "Airport: " << m_index_ap << " registered plane with index: " <<tmp_index<< endl;
+			if (debug == 1) cout<<"By iterator access check: ";
+			it->second->fly_to_airport();
+			if (debug == 1) cout<<"By Key acces check: ";
+			przypisane_samoloty[tmp_index]->fly_to_airport();
+		}
 	}
 
 
@@ -104,33 +111,19 @@ using namespace std;
 		if (przypisane_samoloty.size() > 0)
 			{
 			std::cout << "		AIRPORT no: " << m_index_ap << endl;
-			for (int i = 0; i < przypisane_samoloty.size(); i++)
-				{
-				if (EventSchedule[(przypisane_samoloty[i]->get_plane_index())-1] == current_time)
-					{
-					do_routine_on_plane(przypisane_samoloty[i].get());
-					if (przypisane_samoloty[i]->get_status() == flying_away)
-						{
-						take_off(przypisane_samoloty[i].get());
-						indexes_to_rm.push_back(i);
-						}
-					}
-				}
+
+
+			}
 
 				/// REMOVING PLANES
 			if (indexes_to_rm.size() > 0)
 				{
 				for (int i = 0; i < indexes_to_rm.size(); i++)
 					{
-						for (int j = 0; j < przypisane_samoloty.size(); j++)
-							if (przypisane_samoloty[j] -> get_plane_index() == indexes_to_rm[i])
-								{
-								przypisane_samoloty.erase(przypisane_samoloty.begin() + j);
-								}
-
+						przypisane_samoloty.erase(indexes_to_rm[i]);
 					}
 				}
-			}
+
 	}
 
 
@@ -189,11 +182,12 @@ using namespace std;
 	}
 
 //CONDITIONAL REGISTER
-	void Airport::reserve_lane(Samolot* tmp_plane)
+	bool Airport::reserve_lane(Samolot* tmp_plane)
 	{
 		int i = get_airport_size();
 		// cout << "NUMBER OF LINES: " << i << endl;
 		int out = 0;
+		bool res;
 		int plane_index = tmp_plane ->get_plane_index();
 		do
 		{
@@ -202,6 +196,7 @@ using namespace std;
 			{
 				cout << "	We cannot reserve a line for you plane: " << tmp_plane->get_plane_index() << endl;
 				tmp_plane->set_status(waiting);
+				res = 0;
 			}
 			else if ((tmp_plane->get_status() == waiting) && (i>0))
 			{
@@ -213,8 +208,9 @@ using namespace std;
 					m_tower.m_lines[i - 1][1] = tmp_plane->get_plane_index();
 					out = 1;
 					cout << "	Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
+					res = 1;
 				}
-
+				//to sie wgl kiedykolwiek wykonuje?????
 				else if (m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index())
 				{
 					cout << "	A lane has been reserved for: " << tmp_plane->get_plane_index() << endl;
@@ -229,36 +225,6 @@ using namespace std;
 		} while ((out == 0) && (i >= 0));
 	if (debug == 1) show_occupancy();
 	}
-
-//FORCE REGISTER
-	void Airport::register_lane(std::shared_ptr<Samolot>tmp_plane)
-	{
-		przypisane_samoloty.push_back(tmp_plane);
-		int i = get_airport_size();
-		if (debug == 1) cout << "NUMBER OF LINES: " << i << endl;
-		int out = 0;
-
-		do
-		{
-				if (i == 0)
-				{
-					return;
-				}
-				else if (m_tower.m_lines[i - 1][1] == 0)
-				{
-					przypisane_samoloty.back()->set_status(waiting);
-
-					m_tower.m_lines[i - 1][1] = przypisane_samoloty.back()->get_plane_index();
-					out = 1;
-					cout << "		Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << przypisane_samoloty.back()->get_plane_index() << endl;
-
-				}
-				i--;
-
-		} while ((out == 0) && (i >= 0));
-		if (debug == 1) show_occupancy();
-	}
-
 
 	void Airport::release_lane(Samolot* tmp_plane)
 	{
@@ -288,8 +254,6 @@ using namespace std;
 				priority_que.push_back(tmp_plane->get_plane_index());
 				cout<<"Added priority case for: "<<tmp_plane->get_plane_index()<<endl;
 			}
-
-			tmp_plane->set_status(landing);
 			reserve_lane(tmp_plane);
 		}
 		else

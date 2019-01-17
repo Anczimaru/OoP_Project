@@ -134,13 +134,14 @@ void Samolot::whatAmIDoing()
 
 
 }
+//Emergency routine elements
 bool Samolot::call_emergency()
 {
 
 	if ((get_fuel()<= 0.5) || (get_tech_state() <= 0.75))
 	{
 		cout << "!!!Emergency calling for plane: " <<get_plane_index()<< endl;
-		set_status(waiting);
+		set_emergency();
 		return true;
 	}
 	else
@@ -148,4 +149,16 @@ bool Samolot::call_emergency()
 		if (debug == 1) cout << "No emergency for plane: " << get_plane_index() << endl;
 		return false;
 	}
+}
+void Samolot::set_emergency()
+{
+	m_emergency = 1;
+}
+void Samolot::clear_emergency()
+{
+	m_emergency = 0;
+}
+bool Samolot::get_emergency()
+{
+	return m_emergency;
 }
