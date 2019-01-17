@@ -16,3 +16,6 @@ Zmiany na wersji:
 
 komentarze:
 3 else if w reserve lane sie wykonuje wgl?
+Nie jestem przekonany o ponownym wywołaniu zmiany  statusu na landing. Raczej nie pisałem go. 
+Generalnie ten elif wykonywał się w pierwszej wersji funkcji, głównie dla testu, żeby zobaczyć czy dobrze iteruje po pasach. 
+Może teraz nawet nie bedzie potrzebny, ze względu na to, że po przyjęciu pasa, jest zwalniany.

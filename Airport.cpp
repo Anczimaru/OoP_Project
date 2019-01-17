@@ -226,7 +226,7 @@ using namespace std;
 				tmp_plane->set_status(waiting);
 				res = 0;
 			}
-			else if ((tmp_plane->get_status() == waiting) && (i>0))
+			else if ((tmp_plane->get_status() == waiting) && (i>0)) // nie jestem pewien czy ten drugi warunek jest tu konieczny
 			{
 				if (m_tower.m_lines[i - 1][1] == 0)
 				{
@@ -242,16 +242,32 @@ using namespace std;
 				else if (m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index())
 				{
 					cout << "	A lane has been reserved for: " << tmp_plane->get_plane_index() << endl;
-					tmp_plane->set_status(landing);
+					tmp_plane->set_status(landing); 
 					out = 1;
 				}
 
+			}
+			else if ((tmp_plane->get_status() == departing))
+			{
+				if (m_tower.m_lines[i - 1][1] == 0)
+				{
+					tmp_plane->set_status(flying_away);
+					m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index();
+					out = 1;
+					cout << "	Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
+					if (debug == 1)
+					{
+						cout << "Plane ready to take off\n";
+					}
+					res = 1;
+				}
 			}
 
 			i--;
 
 		} while ((out == 0) && (i >= 0));
 	if (debug == 1) show_occupancy();
+	return res;
 	}
 
 	void Airport::release_lane(Samolot* tmp_plane)

@@ -56,7 +56,7 @@ public:
 	bool reserve_lane(Samolot* tmp_plane);
 	void release_lane(Samolot* tmp_plane);
 	void prioritize(Samolot* tmp_plane);
-	void register_lane(std::shared_ptr<Samolot>tmp_plane);
+	//void register_lane(std::shared_ptr<Samolot>tmp_plane);
 
 	//Getters
 	Point get_position();
