@@ -19,14 +19,14 @@ status_t RandomizeStatus()
 }
 
 //Constructor
-Samolot::Samolot() : m_dest(2), m_src(1), m_status(flying),  m_fuel(0.9), m_tech_state(0.8), m_index(samoloty.size()+1),m_ap_index(1), m_speed(10)
+Samolot::Samolot() : m_dest(2), m_src(1), m_status(flying),  m_fuel(0.9), m_tech_state(0.8), m_index(samoloty.size()+1),m_ap_index(1), m_speed(10),m_priority(0)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));
 	EventSchedule.push_back(init_time);
 	//cout <<	"Im plane with no:"<<m_index<<endl;
 }
-Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1), m_speed(10)
+Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(flying), m_fuel(fuel), m_tech_state(tech), m_index(samoloty.size() + 1), m_ap_index(1), m_speed(10), m_priority(0)
 {
 	cout << "Created plane with no:" << m_index << endl;
 	samoloty.push_back(make_shared<Samolot>(this));
@@ -37,7 +37,7 @@ Samolot::Samolot(double fuel, double tech) :m_dest(2), m_src(1), m_status(), m_f
 //COPYING CONSTRUTOR
 Samolot::Samolot(Samolot* tmp_plane) :
 		m_dest(tmp_plane->get_dest()), m_src(tmp_plane->get_src()), m_status(tmp_plane->get_status()), m_fuel(tmp_plane->get_fuel()),
-		m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()), m_ap_index(tmp_plane->get_ap_index()),m_speed(tmp_plane->get_speed())
+		m_tech_state(tmp_plane->get_tech_state()), m_index(tmp_plane->get_plane_index()), m_ap_index(tmp_plane->get_ap_index()),m_speed(tmp_plane->get_speed()), m_priority(tmp_plane->get_priority())
 {
 	if (debug == 1)
 		cout << "   Copying glorious plane with index: " << m_index << endl;
@@ -153,6 +153,11 @@ bool Samolot::call_emergency()
 void Samolot::set_emergency()
 {
 	m_emergency = 1;
+	increase_priority();
+	increase_priority();
+	increase_priority();
+	increase_priority();
+	increase_priority();
 }
 void Samolot::clear_emergency()
 {
@@ -161,4 +166,18 @@ void Samolot::clear_emergency()
 bool Samolot::get_emergency()
 {
 	return m_emergency;
+}
+
+//priority FUNCTIONS
+void Samolot::increase_priority()
+{
+	m_priority++;
+}
+void Samolot::clear_priority()
+{
+	m_priority=0;
+}
+int Samolot::get_priority()
+{
+	return m_priority;
 }

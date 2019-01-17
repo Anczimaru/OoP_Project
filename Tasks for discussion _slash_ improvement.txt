@@ -1,21 +1,7 @@
 ﻿ToDo:
-1. PACZ PKT 1.Samoloty powinien dostać pas jak chce wyladować, potem go zwolnić po wylądowaniu i znowu go dostać jak będzie chciał robić departure i znowu zwolnić przy flying away
-2. proponuje dodać coś jakieś que do tego kiedy jaki samolot ma lądować, coś na zasadzie że jeśli samolot został odrzucony, zeby dostawał priorytet do otrzymania linii
-3. przemyslec funkcje land
-
+1. wrzuć try, throw i catch, cnie XDDDDD
 
 Zmiany na wersji:
 
-1. Zrobiłem zwalnianie pasu w funkcji land
-2. Zaleznosc czasu lotu od odlelosci
-3. Fine tuning tego ile co zajmuje
-4. przeniesienie indeksowania tylko i wyłącznie do funkcji take_off
-5. wylaczylem funkcje register lane w register_plane bo wychodza smieszne rzeczy w fsmie
-
-
-
-komentarze:
-3 else if w reserve lane sie wykonuje wgl?
-Nie jestem przekonany o ponownym wywołaniu zmiany  statusu na landing. Raczej nie pisałem go. 
-Generalnie ten elif wykonywał się w pierwszej wersji funkcji, głównie dla testu, żeby zobaczyć czy dobrze iteruje po pasach. 
-Może teraz nawet nie bedzie potrzebny, ze względu na to, że po przyjęciu pasa, jest zwalniany.
+1.DUUUUŻO KONTERERÓW I INNYCH DZIWNYCH RZECZY XD
+2. super sortowanie na mapie by value

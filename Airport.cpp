@@ -47,13 +47,12 @@ using namespace std;
 
 //FUNCTIONS
 	void Airport::register_plane(std::shared_ptr<Samolot> m_tmp_plane)
+	//register plane so that airport knows that it has to manipulate that particular plane
 	{
-		//register plane so that airport knows that it has to manipulate that particular plane
-		int tmp_index = m_tmp_plane->get_plane_index();
-		przypisane_samoloty.insert(std::make_pair(tmp_index, m_tmp_plane));
-		que.push_back(tmp_index);
-		// if (EventSchedule[przypisane_samoloty.back()->get_plane_index()-1] == init_time) register_lane(przypisane_samoloty.back());
+		int tmp_index = m_tmp_plane->get_plane_index(); //get index
+		przypisane_samoloty.insert(std::make_pair(tmp_index, m_tmp_plane)); //pair it with *p and insert into ap
 		std::map<int, std::shared_ptr<Samolot>>::iterator it = przypisane_samoloty.find(tmp_index);
+		//ok so here, we are making sure that we registered plane properly and that it has been added to our map
  		if(it != przypisane_samoloty.end())
 		{
 			it->second->set_ap_index(m_index_ap);
@@ -68,18 +67,51 @@ using namespace std;
 				cout<<"By Key acces check: ";
 				przypisane_samoloty[tmp_index]->fly_to_airport();
 			}
-			cout<<que.size()<<endl;
 		}
 	}
 
 
 
 //ROUTINES
-	void Airport::do_routine_on_plane(Samolot* m_tmp_plane)
+	void Airport::do_routine()
+	/*Quite complicated, but first we assert that we have planes, then we create que, base on planes which are registered for particular airport
+	After obtaining que, we look for planes, which are supposed to have done something in present time, if they do, we make them take action
+	*/
 	{
-		//HEART OF ACTION IF DOES APRIOPRIATE ACTIONS DEPENDING ON STATUS OF PLANE
-		//iterate over converted int status
-		//taking apriopriate actions
+		std::vector<int> indexes_to_rm;
+		//FUNCTION ITERATES OVER VECTOR OF PRZYPISANE_SAMOLOTY, and does routine on everysingle one of them
+		if (przypisane_samoloty.size()) //make sure that we have planes to have fun with
+			{
+			std::cout << "		AIRPORT no: " << m_index_ap << endl;
+			create_que(); //Bring Law and Order into succession of actions
+			for(multimap<int, int>::const_reverse_iterator it = que.rbegin(); it != que.rend(); ++it) //well, just another iterator
+				{
+					if (EventSchedule[(it->second)-1] == current_time) //make sure plane needs attention
+						{
+						if (debug == 0) show_que();
+						do_routine_on_plane(przypisane_samoloty[it->second].get()); //do proper stuff on plane
+						if (przypisane_samoloty[it->second]->get_status() == flying_away) //if plane wants to quit allow it to do it
+							{
+							take_off(przypisane_samoloty[it->second].get()); //make plane quit it's life on present airport
+							indexes_to_rm.push_back(it->second); //and it to trashing list
+							}
+						}
+				}
+			}
+			/// REMOVING PLANES routine, but only after we do all stuff on them !!!!!!!!!
+			if (indexes_to_rm.size() > 0) //make sure there is something on trashing list
+				{
+				for (int i = 0; i < indexes_to_rm.size(); i++)
+					{
+						przypisane_samoloty.erase(indexes_to_rm[i]);
+					}
+				}
+	}
+
+	void Airport::do_routine_on_plane(Samolot* m_tmp_plane)
+	/* !!!!!!!!!!!!!!!!!!!!! Probably most important function in whole code !!!!!!!!!!!!!!
+	It takes action depending on state of plane in FSM */
+	{
 		switch (m_tmp_plane->get_status())
 		{
 		case status_t::flying:
@@ -106,89 +138,52 @@ using namespace std;
 			EventSchedule[m_tmp_plane->get_plane_index()-1] += (60*60);
 			break;
 		case status_t::departing:
-			m_tmp_plane->set_status(flying_away);
+			reserve_lane(m_tmp_plane);
 			cout << "     plane no: " << m_tmp_plane->get_plane_index() << " is leaving" << endl;
 			EventSchedule[m_tmp_plane->get_plane_index()-1] += (20*60);
 			break;
 		}
 	}
 
-
-	void Airport::do_routine()
-	{
-		std::vector<int> indexes_to_rm;
-		//FUNCTION ITERATES OVER VECTOR OF PRZYPISANE_SAMOLOTY, and does routine on everysingle one of them
-		if (que.size() > 0)
-			{
-			std::cout << "		AIRPORT no: " << m_index_ap << endl;
-			std::list<int>::iterator it = que.begin();
-			while(it != que.end())
-				{
-					if (EventSchedule[(przypisane_samoloty[*it]->get_plane_index())-1] == current_time)
-						{
-
-						if (debug == 1) cout<<"doing plane with index: "<<*it<<endl;
-						do_routine_on_plane(przypisane_samoloty[*it].get());
-						if (przypisane_samoloty[*it]->get_status() == flying_away)
-							{
-							if (debug == 1) show_que();
-							take_off(przypisane_samoloty[*it].get());
-							indexes_to_rm.push_back(*it);
-							if (debug == 1) show_que();
-							}
-						}
-				it++;
-				}
-
-			}
-
-				/// REMOVING PLANES
-			if (indexes_to_rm.size() > 0)
-				{
-				for (int i = 0; i < indexes_to_rm.size(); i++)
-					{
-						que.remove(indexes_to_rm[i]);
-						przypisane_samoloty.erase(indexes_to_rm[i]);
-					}
-				}
-
-	}
-
-
 //ROUTINE SUB FUNCTIONS
 	void Airport::land(Samolot* m_tmp_plane)
 	{
+		//make plane land and clear its prior so it is not attention needing kid
 		release_lane(m_tmp_plane);
+		m_tmp_plane->clear_priority();
 	}
 
 	void Airport::service(Samolot* m_tmp_plane)
 	{
-		//load people to plane
+		//do stuff on plane
 		m_tmp_plane -> set_tech_state(1.0);
 		m_tmp_plane ->set_fuel(1.0);
+		m_tmp_plane -> increase_priority();
 	}
 
 
 	void Airport::take_off(Samolot* m_tmp_plane)
 	{
 		int dest_index;
-		do
-		{
-			dest_index = (rand() % (lotniska.size())+1);
+		do{
+			dest_index = (rand() % (lotniska.size())+1); //find proper next dst for our plane
 		} while (dest_index == m_index_ap );
+		//set a lot of stuff
 		m_tmp_plane->set_dest(dest_index);
 		m_tmp_plane->set_src(m_index_ap);
 		m_tmp_plane->fly_to_airport();
+		m_tmp_plane->clear_priority();
 		int src_index =  m_tmp_plane ->get_src();
-		release_lane(m_tmp_plane);
-		m_tmp_plane->set_status(flying);
+		release_lane(m_tmp_plane); //release lane after you are done
+		m_tmp_plane->set_status(flying); //go to next state
+		//tell me what have you done, now please
 		int plane_index = m_tmp_plane->get_plane_index();
 		cout << "Reassigning plane no: " << plane_index  << " from: " <<src_index << " to: " << dest_index << endl;
-		lotniska[(dest_index - 1)]->register_plane(samoloty[plane_index-1]);
+		lotniska[(dest_index - 1)]->register_plane(samoloty[plane_index-1]); //reassign it to next airport
 
 
 	}
-
+//Various getters for functionality of airport
 	int Airport::get_airport_index()
 	{
 		return m_index_ap;
@@ -209,68 +204,56 @@ using namespace std;
 		}
 	}
 
-//CONDITIONAL REGISTER
-	bool Airport::reserve_lane(Samolot* tmp_plane)
+//CONDITIONAL REGISTER of plane
+	void Airport::reserve_lane(Samolot* tmp_plane)
 	{
+		/* Fn used to reserve lane to allow plane to switch between states, it's status can't change unless it has free lane
+		Fn allowed only for waiting and departing states*/
 		int i = get_airport_size();
-		// cout << "NUMBER OF LINES: " << i << endl;
 		int out = 0;
-		bool res;
 		int plane_index = tmp_plane ->get_plane_index();
-		do
+		status_t state = tmp_plane->get_status();
+		//we iterate over lanes, and if we find free lane we assign plane to lane
+		if ((state == waiting) || (state == departing)) //assert state of plane
 		{
-
-			if (i == 0)
-			{
-				cout << "	We cannot reserve a line for you plane: " << tmp_plane->get_plane_index() << endl;
-				tmp_plane->set_status(waiting);
-				res = 0;
-			}
-			else if ((tmp_plane->get_status() == waiting) && (i>0)) // nie jestem pewien czy ten drugi warunek jest tu konieczny
-			{
-				if (m_tower.m_lines[i - 1][1] == 0)
+			do{
+				if (i == 0) //make sure we have free lanes, if we don't increase plane prior in futher iterations of AP work
 				{
-
-					tmp_plane->set_status(landing);
-
-					m_tower.m_lines[i - 1][1] = tmp_plane->get_plane_index();
-					out = 1;
-					cout << "	Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
-					res = 1;
+					cout << "	We cannot reserve a line for you plane: " << tmp_plane->get_plane_index() << endl;
+					tmp_plane->increase_priority();
 				}
-				//to sie wgl kiedykolwiek wykonuje?????
-				else if (m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index())
+				// if plane is waiting to land and we have free lane switch to landing state
+				else if (state == waiting)
 				{
-					cout << "	A lane has been reserved for: " << tmp_plane->get_plane_index() << endl;
-					tmp_plane->set_status(landing); 
-					out = 1;
-				}
-
-			}
-			else if ((tmp_plane->get_status() == departing))
-			{
-				if (m_tower.m_lines[i - 1][1] == 0)
-				{
-					tmp_plane->set_status(flying_away);
-					m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index();
-					out = 1;
-					cout << "	Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
-					if (debug == 1)
+					if (m_tower.m_lines[i - 1][1] == 0) //find free lane
 					{
+						tmp_plane->set_status(landing); //move to next state
+						m_tower.m_lines[i - 1][1] = tmp_plane->get_plane_index(); //reserve lane
+						out = 1; //give out msg
+						cout << "	Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
+					}
+				}
+				//if plane is waiting to take off assign it to lane, and to flying_away state
+				else if (state == departing)
+				{
+					if (m_tower.m_lines[i - 1][1] == 0) //find free lane
+					{
+						tmp_plane->set_status(flying_away); //move to next state
+						m_tower.m_lines[i - 1][1] == tmp_plane->get_plane_index(); //reserve lane
+						out = 1; //give out msg
+						cout << "	Reservation of line nr: " << m_tower.m_lines[i - 1][0] << " for plane nr: " << tmp_plane->get_plane_index() << endl;
 						cout << "Plane ready to take off\n";
 					}
-					res = 1;
 				}
-			}
-
-			i--;
-
-		} while ((out == 0) && (i >= 0));
+				i--;
+			}while ((out == 0) && (i >= 0));
+		}
+		else cout<<"WRONG PLANE STATE"<<endl; //lol, why you do this
 	if (debug == 1) show_occupancy();
-	return res;
 	}
 
 	void Airport::release_lane(Samolot* tmp_plane)
+	/*Release lane after it is used by plane to either land or take off */
 	{
 		if ((tmp_plane->get_status() == flying_away) || (tmp_plane->get_status() == landing))
 		{
@@ -288,21 +271,20 @@ using namespace std;
 
 	void Airport::prioritize(Samolot* tmp_plane)
 	{
-		if ((rand()%5) == 0) tmp_plane->set_fuel(0.3);
-		bool emerg = tmp_plane->call_emergency();
-		if (emerg)
+		/* Function used to check state of plane which is flying, if emerg == 1 then try to imediately reserve line */
+		if (tmp_plane->get_status() == flying)
 		{
-			////// newpiece of code
-			if (~(std::find(que.begin(), que.end(), tmp_plane->get_plane_index()) != que.end()));
+			if ((rand()%10) == 0) tmp_plane->set_fuel(0.3);
+			bool emerg = tmp_plane->call_emergency();
+			if (emerg)
 			{
-				que.push_back(tmp_plane->get_plane_index());
-				cout<<"Added priority case for: "<<tmp_plane->get_plane_index()<<endl;
+				tmp_plane->set_status(waiting);
+				reserve_lane(tmp_plane);
 			}
-			reserve_lane(tmp_plane);
-		}
-		else
-		{
-			tmp_plane->set_status(waiting);
+			else
+			{
+				tmp_plane->set_status(waiting);
+			}
 		}
 	}
 
@@ -313,6 +295,7 @@ using namespace std;
 
 	double Airport::get_distane_from(int dest_index)
 	{
+		//As name suggests get distance between airports
 		Point tmp_src_pos = get_position();
 		Point tmp_dst_pos = lotniska[dest_index - 1]->get_position();
 		return tmp_src_pos - tmp_dst_pos;
@@ -320,6 +303,7 @@ using namespace std;
 
 
 	int Airport::get_flight_time(int dest_index, int plane_index, int set)
+	/* get time for next action depending on distance between airports */
 	{
 		int distance = (int)get_distane_from(dest_index);
 		int flight_time = ceil(distance / samoloty[plane_index-1]->get_speed());
@@ -328,10 +312,40 @@ using namespace std;
 		return flight_time;
 	}
 
-	int Airport::get_que_size(){return que.size();}
+///QUE FUNCTIONS
+	template <typename A, typename B>
+	/* Template for sorting map by values, not by keys */
+	multimap<B, A> flip_map(map<A,B> & src)
+	{
+		multimap<B,A> dst; //var init
+		for(typename map<A, B>::const_iterator it = src.begin(); it != src.end(); ++it)
+			{
+				dst.insert(pair<B, A>(it -> second, it -> first));
+			}
+		return dst;
+	}
+
+
+	void Airport::create_que()
+	{
+		map<int,int> temp_que; //temp var init
+		if (debug == 1) cout<<"Starting que creation"<<endl;
+		//iterator creation for source map creation
+		for(map<int, std::shared_ptr<Samolot>>::iterator it= przypisane_samoloty.begin(); it!=przypisane_samoloty.end(); it++)
+		{
+			temp_que.insert(std::make_pair(it->first, it->second->get_priority()));
+		}
+		que = flip_map(temp_que); //map sorted by values
+	}
+
+	int Airport::get_que_size()
+	{
+		return que.size();
+	}
 
 	void Airport::show_que()
 	{
-		for (int n:que){cout<<n<<" ";}
-		cout<<" "<<endl;
+		cout<<"Printin que"<<endl;
+		for(multimap<int, int>::const_reverse_iterator it = que.rbegin(); it != que.rend(); ++it)
+        	cout << it -> first << " " << it -> second << endl;
 	}

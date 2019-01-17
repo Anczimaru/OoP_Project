@@ -30,7 +30,7 @@ private:
 	int m_index_ap; //index of airport
 	int m_waiting_ppl;
 	map <int, std::shared_ptr<Samolot>> przypisane_samoloty;
-	list<int> que;
+	multimap<int, int> que; //priority, then index
 	int m_no_lines;
 	Tower m_tower;
 	Point m_position;
@@ -53,7 +53,7 @@ public:
 	void take_off(Samolot * m_tmp_plane);
 
 	//Lane operations
-	bool reserve_lane(Samolot* tmp_plane);
+	void reserve_lane(Samolot* tmp_plane);
 	void release_lane(Samolot* tmp_plane);
 	void prioritize(Samolot* tmp_plane);
 	//void register_lane(std::shared_ptr<Samolot>tmp_plane);
@@ -65,6 +65,7 @@ public:
 	int get_flight_time(int dest_index, int plane_index, int set);
 	double get_distane_from(int dest_index);
 	void show_occupancy();
+	void create_que();
 	int get_que_size();
 	void show_que();
 };

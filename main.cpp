@@ -115,6 +115,7 @@ int main()
 
 
 	create_airports(3);
+	Samolot p1(0.3,0.8);
 	create_planes(3);
 	initialize();
 	runner();

@@ -36,6 +36,7 @@ private:
 	double m_fuel;
 	status_t m_status;
 	bool m_emergency;
+	int m_priority;
 public:
 	Samolot();
 	Samolot(double fuel, double tech);
@@ -62,8 +63,8 @@ public:
 	void clear_emergency();
 	bool get_emergency();
 	int get_speed();
-	/*void set_status(int i);
-	void increment_status();*/
-
+	void increase_priority();
+	void clear_priority();
+	int get_priority();
 };
 #endif
