@@ -107,7 +107,7 @@ int main()
 {
 	srand(time(NULL));
 
-	debug = 1; //check debug mode
+	debug = 0; //check debug mode
 	always_print = 0; // if 1 writes in 5 min intervals, if 0 writes when needed
 	/*Airport Los_Angles(1500, -1500, 3), Katowice(200,100,5), London(400,-400,5), Moscow(1000,2000,10);
 	Samolot p1(0.6, 0.8), p2(0.6, 0.5), p3(1, 1), p4(0.3, 0.4);*/

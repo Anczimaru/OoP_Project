@@ -8,6 +8,7 @@
 #include <memory>
 #include <cmath>
 #include <list>
+#include <map>
 #include <algorithm>
 
 
@@ -50,15 +51,24 @@ using namespace std;
 		//register plane so that airport knows that it has to manipulate that particular plane
 		int tmp_index = m_tmp_plane->get_plane_index();
 		przypisane_samoloty.insert(std::make_pair(tmp_index, m_tmp_plane));
+		que.push_back(tmp_index);
 		// if (EventSchedule[przypisane_samoloty.back()->get_plane_index()-1] == init_time) register_lane(przypisane_samoloty.back());
 		std::map<int, std::shared_ptr<Samolot>>::iterator it = przypisane_samoloty.find(tmp_index);
  		if(it != przypisane_samoloty.end())
 		{
+			it->second->set_ap_index(m_index_ap);
 			cout << "Airport: " << m_index_ap << " registered plane with index: " <<tmp_index<< endl;
-			if (debug == 1) cout<<"By iterator access check: ";
-			it->second->fly_to_airport();
-			if (debug == 1) cout<<"By Key acces check: ";
-			przypisane_samoloty[tmp_index]->fly_to_airport();
+			if (debug == 1)
+			{
+				cout<<"By iterator access check: ";
+				it->second->fly_to_airport();
+			}
+			if (debug == 1)
+			{
+				cout<<"By Key acces check: ";
+				przypisane_samoloty[tmp_index]->fly_to_airport();
+			}
+			cout<<que.size()<<endl;
 		}
 	}
 
@@ -108,10 +118,27 @@ using namespace std;
 	{
 		std::vector<int> indexes_to_rm;
 		//FUNCTION ITERATES OVER VECTOR OF PRZYPISANE_SAMOLOTY, and does routine on everysingle one of them
-		if (przypisane_samoloty.size() > 0)
+		if (que.size() > 0)
 			{
 			std::cout << "		AIRPORT no: " << m_index_ap << endl;
+			std::list<int>::iterator it = que.begin();
+			while(it != que.end())
+				{
+					if (EventSchedule[(przypisane_samoloty[*it]->get_plane_index())-1] == current_time)
+						{
 
+						if (debug == 1) cout<<"doing plane with index: "<<*it<<endl;
+						do_routine_on_plane(przypisane_samoloty[*it].get());
+						if (przypisane_samoloty[*it]->get_status() == flying_away)
+							{
+							if (debug == 1) show_que();
+							take_off(przypisane_samoloty[*it].get());
+							indexes_to_rm.push_back(*it);
+							if (debug == 1) show_que();
+							}
+						}
+				it++;
+				}
 
 			}
 
@@ -120,6 +147,7 @@ using namespace std;
 				{
 				for (int i = 0; i < indexes_to_rm.size(); i++)
 					{
+						que.remove(indexes_to_rm[i]);
 						przypisane_samoloty.erase(indexes_to_rm[i]);
 					}
 				}
@@ -249,9 +277,9 @@ using namespace std;
 		if (emerg)
 		{
 			////// newpiece of code
-			if (~(std::find(priority_que.begin(), priority_que.end(), tmp_plane->get_plane_index()) != priority_que.end()));
+			if (~(std::find(que.begin(), que.end(), tmp_plane->get_plane_index()) != que.end()));
 			{
-				priority_que.push_back(tmp_plane->get_plane_index());
+				que.push_back(tmp_plane->get_plane_index());
 				cout<<"Added priority case for: "<<tmp_plane->get_plane_index()<<endl;
 			}
 			reserve_lane(tmp_plane);
@@ -282,4 +310,12 @@ using namespace std;
 		cout<< "estimated time of arrival: "<<flight_time<<endl;
 		if (set == 1) EventSchedule[plane_index-1] += (flight_time*60);
 		return flight_time;
+	}
+
+	int Airport::get_que_size(){return que.size();}
+
+	void Airport::show_que()
+	{
+		for (int n:que){cout<<n<<" ";}
+		cout<<" "<<endl;
 	}
